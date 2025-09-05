@@ -1,6 +1,7 @@
 ﻿using ConsoleMovement;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -120,13 +121,17 @@ public partial class Home
             if (isInTarget && matchedSoFar < allowedMatches)
             {
                 gridStyles[CurrentRow, i] = "present";
-                VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "PresentLetter";
+                if (!VisibleKeyboardStyle.ContainsKey(guessedLetter.ToString().ToUpper()) || VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] == "AbsentLetter")
+                {
+                    VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "PresentLetter";
+                }
                 matchedLetterCounts[guessedLetter] = matchedSoFar + 1;
             }
             else
             {
                 gridStyles[CurrentRow, i] = "absent";
-                VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "AbsentLetter";
+                if (!VisibleKeyboardStyle.ContainsKey(guessedLetter.ToString().ToUpper()))
+                    VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "AbsentLetter";
             }
         }
     }
