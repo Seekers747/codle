@@ -13,6 +13,7 @@
                 <input class="LetterCell @gridStyles[y, x]"
                        type="text"
                        maxlength="1"
+                       pattern="A-Za-z"
                        readonly
                        @bind="@grid[y, x]"/>
             }

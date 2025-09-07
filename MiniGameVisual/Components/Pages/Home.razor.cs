@@ -41,7 +41,7 @@ public partial class Home
             Console.WriteLine(CurrentGuess);
             return;
         }
-        if (CurrentGuess.Length < 5 && evt.Key.Length == 1)
+        if (CurrentGuess.Length < 5 && evt.Key.Length == 1 && char.IsLetter(evt.Key[0]))
         {
             CurrentGuess += evt.Key;
             if (CurrentColumn < 5)
@@ -53,7 +53,11 @@ public partial class Home
             }
             return;
         }
-        if (evt.Code == "Enter" && CurrentRow <= 6 && CurrentGuess.Length == 5 && CurrentGuess.All(char.IsLetter))
+        if (evt.Code == "Enter"
+            && CurrentRow <= 6
+            && CurrentGuess.Length == 5
+            && CurrentGuess.All(char.IsLetter)
+            && CheckIfGuessIsValidWord(CurrentGuess))
         {
             wordle.MakeGuess(CurrentGuess);
             CheckCorrectLetters(CurrentGuess);
@@ -162,5 +166,18 @@ public partial class Home
             return style;
         }
         return "";
+    }
+
+    private bool CheckIfGuessIsValidWord(string ValidGuess)
+    {
+        var lines = File.ReadAllLines("combined_wordlist.txt");
+        foreach (var line in lines)
+        {
+            if (line.StartsWith(ValidGuess))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
