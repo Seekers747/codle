@@ -1,0 +1,100 @@
+const:Een constante waarde die niet verandert. In code gebruik je 'const' om een variabele vast te zetten, zoals 'const pi = 3.14'.
+throw:Gooit een fout of uitzondering in een programma. Bijvoorbeeld 'throw new Error("Ongeldige invoer")' stopt de uitvoering en toont een foutmelding.
+while:Een loop die blijft draaien zolang een conditie waar is. Bijvoorbeeld 'while(x < 10)' blijft herhalen zolang x kleiner is dan 10.
+class:Een blauwdruk voor objecten in objectgeoriënteerd programmeren. Bijvoorbeeld 'class Auto' kan eigenschappen hebben zoals 'kleur' en methodes zoals 'rijden()'.
+break:Stopt een loop voortijdig. Bijvoorbeeld 'break' wordt gebruikt om uit een 'while'- of 'for'-loop te springen zodra een bepaalde conditie is bereikt.
+bytes:Eenheden van digitale informatie, vaak gebruikt voor geheugen. Bijvoorbeeld een afbeelding van 1 MB bestaat uit ongeveer 1 miljoen bytes.
+input:Data die van de gebruiker of een bestand komt. Bijvoorbeeld 'input("Wat is je naam?")' vraagt om invoer via het toetsenbord.
+stdin:Standaard invoerbron, meestal het toetsenbord. In programmeertalen zoals Python kun je via 'sys.stdin' invoer lezen van de gebruiker.
+short:Een integer-type met beperkte grootte. Wordt vaak gebruikt om geheugen te besparen, bijvoorbeeld bij sensordata of embedded systemen.
+array:Een geordende lijst van elementen van hetzelfde type. Bijvoorbeeld 'int[] cijfers = {1, 2, 3}' is een array van gehele getallen.
+until:Loop die doorgaat tot een conditie waar is (zoals in Ruby). Bijvoorbeeld 'until x == 5' blijft herhalen tot x gelijk is aan 5.
+print:Geeft tekst of data weer op het scherm. Bijvoorbeeld 'print("Hallo wereld")' toont de tekst in de console.
+debug:Proces van het vinden en oplossen van fouten in code. Je gebruikt tools of logberichten om te achterhalen waarom je programma niet werkt.
+razor:Taal voor het schrijven van dynamische webpagina’s in ASP.NET. Je kunt HTML combineren met C#-code om interactieve websites te maken.
+basic:Eenvoudige programmeertaal, vaak gebruikt voor educatie. Bijvoorbeeld 'PRINT "Hallo"' toont tekst op het scherm in BASIC.
+query:Een verzoek om data, vaak in databases. Bijvoorbeeld 'SELECT * FROM gebruikers' haalt alle gebruikers op uit een database.
+mysql:Populaire relationele database. Wordt vaak gebruikt voor websites en apps om data zoals gebruikers of producten op te slaan.
+style:CSS-regels die bepalen hoe HTML-elementen eruitzien. Bijvoorbeeld 'style="color: red;"' maakt tekst rood.
+cmake:Tool voor het bouwen van softwareprojecten. Het genereert configuratiebestanden zodat je project gecompileerd kan worden op verschillende systemen.
+float:Datatype voor decimale getallen. Bijvoorbeeld 'float pi = 3.14;' slaat een getal met cijfers achter de komma op.
+route:Pad naar een bepaalde webpagina of API-endpoint. Bijvoorbeeld '/home' leidt naar de homepage van een website.
+color:Eigenschap in CSS die kleur bepaalt. Bijvoorbeeld 'color: blue;' maakt tekst blauw.
+index:Locatie van een element in een array of database. Bijvoorbeeld 'array[2]' geeft het derde element (index begint bij 0).
+width:Breedte van een element in CSS of grafische context. Bijvoorbeeld 'width: 100px;' maakt een element 100 pixels breed.
+https:Beveiligd protocol voor webverkeer. Het zorgt ervoor dat data versleuteld wordt verzonden tussen browser en server.
+focus:Actieve element in een gebruikersinterface. Bijvoorbeeld: als je in een tekstvak klikt, krijgt dat element 'focus'.
+error:Foutmelding of mislukte operatie. Bijvoorbeeld 'SyntaxError' betekent dat er iets mis is met de structuur van je code.
+close:Sluit een bestand, venster of verbinding. Bijvoorbeeld 'file.close()' sluit een bestand in Python.
+store:Opslaan van data in geheugen of database. Bijvoorbeeld 'localStorage.setItem("score", 100)' bewaart een score in de browser.
+false:Boolean waarde die onwaar betekent. Bijvoorbeeld 'if(false)' voert de code niet uit omdat de conditie onwaar is.
+lists:Geordende verzamelingen van elementen. Bijvoorbeeld 'list = [1, 2, 3]' is een lijst met drie getallen.
+empty:Een lege waarde of container. Bijvoorbeeld '[]' is een lege lijst, en '' is een lege string.
+async:Asynchrone functie die niet blokkeert. Bijvoorbeeld 'async function fetchData()' haalt data op zonder de rest van de code te pauzeren.
+await:Wacht op de voltooiing van een async-functie. Bijvoorbeeld 'await fetch(url)' wacht tot de data is opgehaald.
+comma:Scheidt elementen in lijsten of parameters. Bijvoorbeeld 'function(x, y)' gebruikt een komma tussen parameters.
+point:Decimaalpunt of coördinaat in grafische context. Bijvoorbeeld '3.14' heeft een decimaalpunt, en '(x, y)' is een punt op een vlak.
+colon:Scheidingsteken in syntax zoals 'if:' of 'key: value'. Bijvoorbeeld 'dict = {"naam": "Imraan"}' gebruikt een dubbelepunt.
+gosub:Roept een subroutine aan in BASIC. Bijvoorbeeld 'GOSUB Bereken' springt naar een aparte codeblok en keert daarna terug.
+write:Schrijft data naar een bestand of output. Bijvoorbeeld 'write("Hallo")' toont of bewaart tekst.
+clear:Verwijdert inhoud of reset een waarde. Bijvoorbeeld 'clear()' wist een lijst of scherm.
+shell:Command-line interface voor besturingssysteem. Bijvoorbeeld 'bash' of 'cmd' laat je commando’s typen om programma’s te starten of bestanden te beheren.
+build:Compileert code tot een uitvoerbaar programma. Bijvoorbeeld 'npm run build' zet je project klaar voor productie.
+value:De inhoud van een variabele. Bijvoorbeeld 'x = 5' betekent dat de waarde van x gelijk is aan 5.
+tools:Hulpmiddelen voor ontwikkeling. Denk aan editors, debuggers, en versiebeheer zoals Git.
+ascii:Standaard voor tekstcodering. Elke letter of teken heeft een numerieke waarde, bijvoorbeeld 'A' is 65 in ASCII.
+paste:Plakt tekst of code in een editor. Bijvoorbeeld 'Ctrl + V' plakt wat je eerder hebt gekopieerd.
+clone:Kopieert een repository, vaak via Git. Bijvoorbeeld 'git clone [url]' haalt een project op van een server.
+react:JavaScript-framework voor UI-componenten. Wordt gebruikt om dynamische webapps te bouwen, zoals interactieve formulieren.
+swift:Programmeertaal van Apple. Wordt gebruikt voor iOS- en macOS-apps, bijvoorbeeld in Xcode.
+emacs:Geavanceerde teksteditor voor programmeurs. Ondersteunt veel programmeertalen en is volledig aanpasbaar.
+issue:Probleem of taak in een project. Bijvoorbeeld op GitHub kun je een 'issue' aanmaken om een bug te melden.
+alloc:Wijst geheugen toe aan een programma. Bijvoorbeeld 'malloc' in C reserveert ruimte in het geheugen.
+reset:Zet waarden of status terug naar begin. Bijvoorbeeld 'form.reset()' wist alle invoervelden in een formulier.
+unity:Game-engine voor 2D/3D spellen. Wordt gebruikt om games te maken voor pc, mobiel en consoles.
+pages:Webpagina’s of documentdelen. Bijvoorbeeld in HTML of in frameworks zoals Next.js.
+fetch:Haalt data op, vaak via een API. Bijvoorbeeld 'fetch("https://api.example.com")' haalt informatie van een server.
+stash:Tijdelijke opslag van wijzigingen in Git. Bijvoorbeeld 'git stash' bewaart je werk zodat je kunt wisselen van branch.
+purge:Verwijdert data of cache volledig. Bijvoorbeeld 'npm cache clean --force' verwijdert oude bestanden.
+stack:Gegevensstructuur of call stack. Bijvoorbeeld een stapel functies die worden uitgevoerd in volgorde.
+repos:Code-opslagplaatsen, vaak in Git. Bijvoorbeeld GitHub bevat duizenden 'repos' met open source projecten.
+linux:Open-source besturingssysteem. Wordt vaak gebruikt door ontwikkelaars vanwege flexibiliteit en controle over het systeem.
+apple:Techbedrijf, bekend van macOS en iOS. Maakt hardware zoals iPhones en software zoals Safari en Xcode.
+local:Verwijst naar lokale opslag of variabele. Bijvoorbeeld 'localStorage' in de browser of een lokale variabele in een functie.
+scala:Programmeertaal die Java combineert met functioneel programmeren. Wordt gebruikt voor schaalbare en robuuste applicaties.
+flash:Verouderde technologie voor animaties en video. Werd vroeger gebruikt voor interactieve websites, maar is nu grotendeels vervangen.
+token:Authenticatiecode of tekstfragment bij parsing. Bijvoorbeeld een 'JWT token' wordt gebruikt om gebruikers te identificeren.
+crypt:Versleuteling van data. Bijvoorbeeld 'bcrypt' versleutelt wachtwoorden zodat ze veilig opgeslagen kunnen worden.
+parse:Ontleden van tekst of data in bruikbare onderdelen. Bijvoorbeeld 'JSON.parse()' zet een tekst om in een JavaScript-object.
+merge:Voegt data of code samen. Bijvoorbeeld 'git merge' combineert wijzigingen van verschillende branches.
+coder:Persoon die code schrijft. Ook wel programmeur genoemd; iemand die software ontwikkelt met programmeertalen.
+table:Gegevensstructuur in databases of HTML. Bijvoorbeeld een HTML `<table>` toont data in rijen en kolommen.
+cache:Tijdelijke opslag voor snelle toegang. Bijvoorbeeld 'browser cache' bewaart afbeeldingen zodat pagina’s sneller laden.
+proxy:Tussenpersoon voor netwerkverkeer. Bijvoorbeeld een 'proxy server' stuurt verzoeken door en kan verkeer filteren.
+crash:Onverwachte beëindiging van een programma. Bijvoorbeeld door een fout of gebrek aan geheugen.
+modal:Pop-up venster dat interactie vereist. Bijvoorbeeld een bevestigingsscherm dat je eerst moet sluiten voordat je verder kunt.
+model:Representatie van data of logica. Bijvoorbeeld in machine learning is een model getraind om voorspellingen te doen.
+enter:Toets of actie om invoer te bevestigen. Bijvoorbeeld op een formulier druk je op 'Enter' om te verzenden.
+space:Witruimte of spatiekarakter. Bijvoorbeeld ' ' is een spatie tussen woorden.
+caret:Cursorpositie in tekst. Wordt vaak weergegeven als een knipperende verticale lijn in een tekstveld.
+quote:Tekst tussen aanhalingstekens. Bijvoorbeeld `"Hallo"` is een string in veel programmeertalen.
+macro:Reeks instructies die als één commando worden uitgevoerd. Bijvoorbeeld in Excel kun je een macro maken om taken te automatiseren.
+event:Gebeurtenis zoals een klik of toetsdruk. Bijvoorbeeld 'onclick' reageert op een muisklik in JavaScript.
+forks:Kopieën van een repository om onafhankelijk aan te werken. Bijvoorbeeld op GitHub kun je een project 'forken' om je eigen versie te maken.
+yield:Geeft een waarde terug in een generatorfunctie. Bijvoorbeeld 'yield x' pauzeert de functie en geeft x terug.
+scope:Zichtbaarheid van variabelen binnen codeblokken. Bijvoorbeeld een variabele binnen een functie is alleen daar beschikbaar.
+alias:Alternatieve naam voor een functie of module. Bijvoorbeeld 'alias ll="ls -l"' maakt een kortere versie van een commando.
+regex:Patroon voor tekstmatching (regular expressions). Bijvoorbeeld '^a.*z$' matcht een string die begint met 'a' en eindigt met 'z'.
+using:Geeft aan welke namespace of module wordt gebruikt. Bijvoorbeeld 'using System;' in C# importeert standaardfunctionaliteit.
+nginx:Webserver en reverse proxy. Wordt vaak gebruikt om websites snel en veilig te serveren.
+admin:Beheerder met extra rechten. Bijvoorbeeld een admin kan gebruikers beheren en instellingen aanpassen.
+patch:Update of bugfix voor software. Bijvoorbeeld 'security patch' verhelpt een kwetsbaarheid in een programma.
+modem:Apparaat voor internetverbinding. Verbindt je computer met het netwerk via kabel, DSL of mobiel signaal.
+queue:Gegevensstructuur met FIFO-principe. Bijvoorbeeld 'queue.push()' voegt iets toe, en 'queue.pop()' haalt het oudste item eruit.
+email:Elektronische post, vaak gebruikt voor notificaties. Bijvoorbeeld 'sendEmail(to, subject, body)' verstuurt een bericht.
+param:Parameter die aan een functie wordt doorgegeven. Bijvoorbeeld 'function greet(name)' gebruikt 'name' als parameter.
+mouse:Randapparaat voor gebruikersinteractie. Wordt gebruikt om te klikken, slepen en navigeren op het scherm.
+scrum:Agile ontwikkelmethode voor teams. Werkt met korte sprints en dagelijkse meetings om software iteratief te ontwikkelen.
+click:Gebruikersactie met de muis. Bijvoorbeeld 'onClick' in HTML reageert op een klik.
+agent:Softwarecomponent die taken uitvoert. Bijvoorbeeld een 'search agent' zoekt automatisch naar informatie.
+excel:Spreadsheetsoftware voor data-analyse. Wordt gebruikt voor berekeningen, grafieken en tabellen.

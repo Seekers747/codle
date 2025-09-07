@@ -4,21 +4,24 @@
 <PageTitle>Home</PageTitle>
 
 <div class="Wordle" @ref="WordleResetFix" @onkeydown="OnPhysicalKeyboardClick" tabindex="0">
-    @for (int y = 0; y < 6; y++)
-    {
-        <div class="AttemptRow">
-            @for (int x = 0; x < 5; x++)
-            {
-                <input class="LetterCell @gridStyles[y, x]"
-                       type="text"
-                       maxlength="1"
-                       readonly="true"
-                       aria-label="Letter cell"
-                       @bind="@grid[y, x]"/>
-            }
-        </div>
-    }
+    <div class="GuessBox">
+        @for (int y = 0; y < 6; y++)
+        {
+            <div class="AttemptRow">
+                @for (int x = 0; x < 5; x++)
+                {
+                    <input class="LetterCell @gridStyles[y, x]"
+                           type="text"
+                           maxlength="1"
+                           readonly="true"
+                           aria-label="Letter cell"
+                           @bind="@grid[y, x]" />
+                }
+            </div>
+        }
+    </div>
     <h1 class="WordleMessageStyling">@wordle.Message</h1>
+    <h3 class="WordleExplainStyling">@wordle.WordleWordExplain</h3>
 
     <section class="VisibleKeyboard" aria-label="On-screen keyboard">
         <div class="VisibleKeyboardRow">

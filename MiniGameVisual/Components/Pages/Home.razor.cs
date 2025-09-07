@@ -19,6 +19,11 @@ public partial class Home
     private readonly string[] BottomRowVisibleKeyboard = ["Z", "X", "C", "V", "B", "N", "M"];
     private readonly Dictionary<string, string> VisibleKeyboardStyle = [];
 
+    protected override void OnInitialized()
+    {
+        wordle.StartGame();
+    }
+
     private void OnPhysicalKeyboardClick(KeyboardEventArgs evt)
     {
         HandleKeyPress(evt);
