@@ -9,36 +9,48 @@
         <div class="AttemptRow">
             @for (int x = 0; x < 5; x++)
             {
-                var index = y * 5 + x;
                 <input class="LetterCell @gridStyles[y, x]"
                        type="text"
                        maxlength="1"
-                       pattern="A-Za-z"
-                       readonly
+                       readonly="true"
+                       aria-label="Letter cell"
                        @bind="@grid[y, x]"/>
             }
         </div>
     }
     <h1 class="WordleMessageStyling">@wordle.Message</h1>
-    <div class="VisibleKeyboard">
+
+    <section class="VisibleKeyboard" aria-label="On-screen keyboard">
         <div class="VisibleKeyboardRow">
             @foreach (var letter in TopRowVisibleKeyboard)
             {
-                <button class="KeyboardButton @LetterColorChange(letter)" @onclick="() => OnVisibleKeyboardClick(letter)">@letter</button>
+                <button 
+                    class="KeyboardButton @LetterColorChange(letter)" 
+                    @onclick="() => OnVisibleKeyboardClick(letter)">
+                    @letter
+                </button>
             }
         </div>
         <div class="VisibleKeyboardRow">
             @foreach (var letter in MiddleRowVisibleKeyboard)
             {
-                <button class="KeyboardButton @LetterColorChange(letter)" @onclick="() => OnVisibleKeyboardClick(letter)">@letter</button>
+                <button 
+                    class="KeyboardButton @LetterColorChange(letter)" 
+                    @onclick="() => OnVisibleKeyboardClick(letter)">
+                    @letter
+                </button>
             }
         </div>
         <div class="VisibleKeyboardRow">
             @foreach (var letter in BottomRowVisibleKeyboard)
             {
-                <button class="KeyboardButton @LetterColorChange(letter)" @onclick="() => OnVisibleKeyboardClick(letter)">@letter</button>
+                <button 
+                    class="KeyboardButton @LetterColorChange(letter)" 
+                    @onclick="() => OnVisibleKeyboardClick(letter)">
+                    @letter
+                </button>
             }
         </div>
-    </div>
+    </section>
     <button class="RestartGameButton" @onclick="RestartGame">Restart game</button>
 </div>

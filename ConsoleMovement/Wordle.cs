@@ -9,44 +9,43 @@ namespace ConsoleMovement;
 public class Wordle
 {
     public string WordleWord { get; private set; } = string.Empty;
-    int ChancesLeft = 6;
+    private int ChancesLeft = 6;
     public string Message { get; private set; } = "Waiting for your guess...";
-    public bool GameOver = false;
+    public bool GameOver { get; private set; } = false;
+
     public Wordle()
     {
-        GetWordFromFile();
+        LoadRandomCodleAnswer();
     }
+
     public void MakeGuess(string guess)
     {
+        guess = guess.ToLower();
+
         if (GameOver) return;
 
-        if (string.IsNullOrWhiteSpace(guess) || guess.Length != 5 || guess.All(char.IsDigit))
+        if (!IsValidGuess(guess))
         {
             Message = "Not a valid answer, the word must contain 5 letters!";
             return;
         }
 
-        if (guess.ToLower() == WordleWord)
+        if (guess == WordleWord)
         {
             Message = "You guessed the word!";
             GameOver = true;
+            return;
         }
-        else
-        {
-            ChancesLeft--;
-            if (ChancesLeft == 0)
-            {
-                Message = $"You didn't guess the word! The correct word was: {WordleWord}!";
-                GameOver = true;
-            }
-            else
-            {
-                Message = $"Not the right word, you have {ChancesLeft} guesses left!";
-            }
-        }
+
+        ChancesLeft--;
+
+        GameOver = ChancesLeft == 0;
+        Message = GameOver
+            ? $"You didn't guess the word! The correct word was: {WordleWord}!"
+            : $"Not the right word, you have {ChancesLeft} guesses left!";
     }
 
-    public string GetWordFromFile()
+    private string LoadRandomCodleAnswer()
     {
         var lines = File.ReadAllLines("randompickerwordlist.txt");
         var random = new Random();
@@ -54,11 +53,19 @@ public class Wordle
         WordleWord = lines[index].Trim().ToLower();
         return WordleWord;
     }
+
     public void Reset()
     {
         ChancesLeft = 6;
         Message = "Waiting for your guess...";
         GameOver = false;
-        GetWordFromFile();
+        LoadRandomCodleAnswer();
+    }
+
+    private static bool IsValidGuess(string guess)
+    {
+        return !string.IsNullOrWhiteSpace(guess) &&
+               guess.Length == 5 &&
+               !guess.All(char.IsDigit);
     }
 }

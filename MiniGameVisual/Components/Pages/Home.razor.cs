@@ -1,14 +1,6 @@
 ﻿using ConsoleMovement;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Reflection;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MiniGameVisual.Components.Pages;
 
@@ -27,48 +19,6 @@ public partial class Home
     private readonly string[] BottomRowVisibleKeyboard = ["Z", "X", "C", "V", "B", "N", "M"];
     private readonly Dictionary<string, string> VisibleKeyboardStyle = [];
 
-    private void HandleKeyPress(KeyboardEventArgs evt)
-    {
-        if (evt.Code == "Backspace" && CurrentGuess.Length > 0)
-        {
-            CurrentGuess = CurrentGuess[..^1];
-            if (CurrentColumn > 0)
-            {
-                CurrentColumn--;
-                gridStyles[CurrentRow, CurrentColumn] = "";
-                grid[CurrentRow, CurrentColumn] = ' ';
-            }
-            Console.WriteLine(CurrentGuess);
-            return;
-        }
-        if (CurrentGuess.Length < 5 && evt.Key.Length == 1 && char.IsLetter(evt.Key[0]))
-        {
-            CurrentGuess += evt.Key;
-            if (CurrentColumn < 5)
-            {
-                evt.Key = evt.Key.ToUpper();
-                grid[CurrentRow, CurrentColumn] = evt.Key[0];
-                gridStyles[CurrentRow, CurrentColumn] = "typed";
-                CurrentColumn++;
-            }
-            return;
-        }
-        if (evt.Code == "Enter"
-            && CurrentRow <= 6
-            && CurrentGuess.Length == 5
-            && CurrentGuess.All(char.IsLetter)
-            && CheckIfGuessIsValidWord(CurrentGuess))
-        {
-            wordle.MakeGuess(CurrentGuess);
-            CheckCorrectLetters(CurrentGuess);
-            if (wordle.GameOver) return;
-            CurrentGuess = string.Empty;
-            CurrentRow++;
-            CurrentColumn = 0;
-            return;
-        }
-    }
-
     private void OnPhysicalKeyboardClick(KeyboardEventArgs evt)
     {
         HandleKeyPress(evt);
@@ -81,62 +31,118 @@ public partial class Home
         HandleKeyPress(evt);
     }
 
+    private void HandleKeyPress(KeyboardEventArgs evt)
+    {
+        CurrentGuess = CurrentGuess.ToLower();
+        Console.WriteLine($"Key: {evt.Key}, Code: {evt.Code}");
+
+        if (evt.Code == "Backspace")
+        {
+            HandleBackspace();
+            return;
+        }
+
+        if (evt.Key.Length == 1 && char.IsLetter(evt.Key[0]))
+        {
+            HandleLetterInput(evt.Key[0]);
+            return;
+        }
+
+        if (evt.Code == "Enter")
+        {
+            HandleEnter();
+            return;
+        }
+    }
+
+    private void HandleLetterInput(char key)
+    {
+        if (CurrentGuess.Length >= 5 || CurrentColumn >= 5) return;
+
+        char upperKey = char.ToUpper(key);
+        CurrentGuess += upperKey;
+        grid[CurrentRow, CurrentColumn] = upperKey;
+        gridStyles[CurrentRow, CurrentColumn] = "typed";
+        CurrentColumn++;
+    }
+
+    private void HandleBackspace()
+    {
+        if (CurrentGuess.Length == 0 || CurrentColumn == 0) return;
+
+        CurrentGuess = CurrentGuess[..^1];
+        CurrentColumn--;
+        gridStyles[CurrentRow, CurrentColumn] = "";
+        grid[CurrentRow, CurrentColumn] = ' ';
+    }
+
+    private void HandleEnter()
+    {
+        if (CurrentGuess.Length != 5 || CurrentRow > 6 || !CurrentGuess.All(char.IsLetter)) return;
+        if (!CheckIfGuessIsValidWord(CurrentGuess)) return;
+
+        wordle.MakeGuess(CurrentGuess);
+        CheckCorrectLetters(CurrentGuess);
+
+        if (wordle.GameOver) return;
+
+        CurrentGuess = string.Empty;
+        CurrentRow++;
+        CurrentColumn = 0;
+    }
+
     private void CheckCorrectLetters(string guess)
     {
         string target = wordle.WordleWord;
-        Dictionary<char, int> targetLetterCounts = new();
+        var targetCounts = new Dictionary<char, int>();
+        var matchedCounts = new Dictionary<char, int>();
 
         foreach (char letter in target)
-        {
-            if (targetLetterCounts.ContainsKey(letter))
-            {
-                targetLetterCounts[letter]++;
-            }
-            else
-            {
-                targetLetterCounts[letter] = 1;
-            }
-        }
-
-        Dictionary<char, int> matchedLetterCounts = new();
+            targetCounts[letter] = targetCounts.GetValueOrDefault(letter) + 1;
 
         for (int i = 0; i < guess.Length; i++)
         {
-            char guessedLetter = guess[i];
-
-            if (guessedLetter == target[i])
+            char letter = guess[i];
+            if (letter == target[i])
             {
                 gridStyles[CurrentRow, i] = "correct";
-                VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "CorrectLetter";
-                matchedLetterCounts[guessedLetter] = matchedLetterCounts.GetValueOrDefault(guessedLetter) + 1;
+                UpdateKeyboardStyle(letter, "CorrectLetter");
+                matchedCounts[letter] = matchedCounts.GetValueOrDefault(letter) + 1;
             }
         }
 
         for (int i = 0; i < guess.Length; i++)
         {
-            char guessedLetter = guess[i];
-
             if (gridStyles[CurrentRow, i] == "correct") continue;
 
-            bool isInTarget = target.Contains(guessedLetter);
-            int matchedSoFar = matchedLetterCounts.GetValueOrDefault(guessedLetter);
-            int allowedMatches = targetLetterCounts.GetValueOrDefault(guessedLetter);
+            char letter = guess[i];
+            bool isInTarget = target.Contains(letter);
+            int matchedSoFar = matchedCounts.GetValueOrDefault(letter);
+            int allowedMatches = targetCounts.GetValueOrDefault(letter);
 
             if (isInTarget && matchedSoFar < allowedMatches)
             {
                 gridStyles[CurrentRow, i] = "present";
-                if (!VisibleKeyboardStyle.ContainsKey(guessedLetter.ToString().ToUpper()) || VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] == "AbsentLetter")
-                {
-                    VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "PresentLetter";
-                }
-                matchedLetterCounts[guessedLetter] = matchedSoFar + 1;
+                UpdateKeyboardStyle(letter, "PresentLetter");
+                matchedCounts[letter] = matchedSoFar + 1;
             }
             else
             {
                 gridStyles[CurrentRow, i] = "absent";
-                if (!VisibleKeyboardStyle.ContainsKey(guessedLetter.ToString().ToUpper()))
-                    VisibleKeyboardStyle[guessedLetter.ToString().ToUpper()] = "AbsentLetter";
+                UpdateKeyboardStyle(letter, "AbsentLetter");
             }
+        }
+    }
+
+    private void UpdateKeyboardStyle(char letter, string style)
+    {
+        string key = letter.ToString().ToUpper();
+
+        if (!VisibleKeyboardStyle.ContainsKey(key) ||
+            (style == "PresentLetter" && VisibleKeyboardStyle[key] == "AbsentLetter") ||
+            style == "CorrectLetter")
+        {
+            VisibleKeyboardStyle[key] = style;
         }
     }
 
@@ -156,6 +162,7 @@ public partial class Home
                 gridStyles[y, x] = string.Empty;
             }
         }
+
         WordleResetFix.FocusAsync();
     }
 
@@ -168,7 +175,7 @@ public partial class Home
         return "";
     }
 
-    private bool CheckIfGuessIsValidWord(string ValidGuess)
+    private static bool CheckIfGuessIsValidWord(string ValidGuess)
     {
         var lines = File.ReadAllLines("combined_wordlist.txt");
         foreach (var line in lines)
