@@ -12,7 +12,7 @@ public partial class Home
     private int CurrentColumn;
     private int CurrentRow;
     private readonly Wordle wordle = new();
-    public List<char> CheckedLetters { get; private set; } = new();
+    public List<char> CheckedLetters { get; private set; } = [];
     private ElementReference WordleResetFix;
     private readonly string[] TopRowVisibleKeyboard = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
     private readonly string[] MiddleRowVisibleKeyboard = ["A", "S", "D", "F", "G", "H", "J", "K", "L" ];

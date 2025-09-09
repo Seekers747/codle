@@ -37,14 +37,8 @@ h1:focus {
     text-align: start;
 }
 
-.Wordle {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 8px;
-    outline: none;
-    width: 100vw;
-    height: 100vh;
+* {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 body {
@@ -53,9 +47,42 @@ body {
     justify-content: center;
 }
 
+.Wordle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100vw;
+    height: 100vh;
+    outline: none;
+}
+
+.GuessBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    outline: none;
+}
+
 .AttemptRow {
     display: flex;
     gap: 8px;
+}
+
+.VisibleKeyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 60px;
+}
+
+.VisibleKeyboardRow {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
 }
 
 .LetterCell {
@@ -68,6 +95,16 @@ body {
     text-align: center;
     font-weight: bold;
     font-size: 24px;
+    transition: transform 0.2s ease;
+}
+
+.LetterCell.typed {
+    transform: scale(1.2);
+    border: solid black 3px;
+}
+
+.LetterCell.typed:active {
+    transform: scale(1);
 }
 
 input:focus {
@@ -76,49 +113,119 @@ input:focus {
     caret-color: transparent;
 }
 
-.correct {
+.correct, .CorrectLetter {
     background-color: limegreen;
     color: whitesmoke;
 }
 
-.present {
+.present, .PresentLetter {
     background-color: goldenrod;
     color: whitesmoke;
 }
 
-.absent {
+.absent, .AbsentLetter {
     background-color: gray;
     color: whitesmoke;
 }
 
-.WordleMessageStyling {
+.KeyboardButton {
+    width: 50px;
+    height: 70px;
+    text-align: center;
+    font-size: x-large;
+    background-color: floralwhite;
+    border: solid 3px black;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.WordleMessageStyling,
+.IncorrectLetterBox,
+.IncorrectLetterBoxTitle {
+    background-color: antiquewhite;
+    border: solid black 3px;
     font-weight: bolder;
+    text-align: center;
+}
+
+.WordleMessageStyling {
     width: 400px;
     height: 110px;
-    background-color: antiquewhite;
-    text-align: center;
-    border: solid black 3px;
     flex-wrap: wrap;
-    position:absolute;
+    position: absolute;
     top: 10px;
     left: 10px;
 }
 
-.WordleExplainStyling {
-    font-weight: bolder;
+.IncorrectLetterBox {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
     width: 400px;
     height: 110px;
-    background-color: antiquewhite;
+    margin: 0;
+    padding: 0;
+}
+
+.IncorrectLetterBoxTitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+.WordleMessageNotice {
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+
+.TopPageTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.WordleTitleStyling {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: 2px;
+}
+
+.WordleSubtitleStyling {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #7f8c8d;
+    margin-top: 0.5rem;
     text-align: center;
-    border: solid black 3px;
-    flex-wrap: wrap;
+    max-width: 600px;
+}
+
+.PositionMessage {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    color: #2c3e50;
+}
+
+.PositionExplanation {
     position: absolute;
     top: 10px;
     right: 10px;
-}
-
-* {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .RestartGameButton {
@@ -129,87 +236,4 @@ input:focus {
     border: solid black 3px;
     border-radius: 8px;
     cursor: pointer;
-    position: absolute;
-    top: 160px;
-    left: 120px;
-}
-
-.IncorrectLetterBox {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    font-weight: bolder;
-    width: 400px;
-    height: 110px;
-    background-color: antiquewhite;
-    text-align: center;
-    border: solid black 3px;
-    flex-wrap: wrap;
-    gap: 1em;
-}
-
-.IncorrectLetterBoxTitle {
-    display: flex;
-    justify-content:center;
-    font-weight: bolder;
-    width: 400px;
-    height: 40px;
-    background-color: antiquewhite;
-    text-align: center;
-    border: solid black 3px;
-    margin:0;
-    padding:0;
-}
-
-.typed {
-    border: solid black 3px;
-}
-
-.KeyboardButton {
-    text-align: center;
-    width: 50px;
-    height: 70px;
-    background-color: floralwhite;
-    border: solid 3px black;
-    border-radius: 7px;
-    font-size: x-large;
-    cursor: pointer;
-}
-
-.VisibleKeyboard {
-    display: flex;
-    gap: 7px;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 60px;
-}
-
-.VisibleKeyboardRow {
-    display: flex;
-    gap: 7px;
-    flex-direction: row;
-}
-
-.CorrectLetter {
-    background-color: limegreen;
-    color: white;
-}
-
-.PresentLetter {
-    background-color: goldenrod;
-    color: whitesmoke;
-}
-
-.AbsentLetter {
-    background-color: gray;
-    color: whitesmoke;
-}
-
-.GuessBox {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 8px;
-    outline: none;
 }

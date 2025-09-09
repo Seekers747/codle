@@ -4,6 +4,10 @@
 <PageTitle>Home</PageTitle>
 
 <div class="Wordle" @ref="WordleResetFix" @onkeydown="OnPhysicalKeyboardClick" tabindex="0">
+    <div class="TopPageTitle">
+        <h1 class="WordleTitleStyling">Codle</h1>
+        <h3 class="WordleSubtitleStyling">A software development related verison of wordle</h3>
+    </div>
     <div class="GuessBox">
         @for (int y = 0; y < 6; y++)
         {
@@ -20,9 +24,16 @@
             </div>
         }
     </div>
-    <h1 class="WordleMessageStyling">@wordle.Message</h1>
-    <h3 class="WordleExplainStyling">@wordle.WordleWordExplain</h3>
-
+    <div class="TopPageTitle PositionMessage">
+        <h1 class="WordleSubtitleStyling WordleMessageNotice">@wordle.Message</h1>
+    </div>
+    <div class="TopPageTitle PositionExplanation">
+        <h1 class="WordleTitleStyling">The meaning</h1>
+        <h3 class="WordleSubtitleStyling">
+            @(wordle.GameOver ? wordle.WordleWordExplain : "The meaning of the word will be shown after the game is over.")
+        </h3>
+    </div>
+    <button class="RestartGameButton" @onclick="RestartGame">Restart game</button>
     <section class="VisibleKeyboard" aria-label="On-screen keyboard">
         <div class="VisibleKeyboardRow">
             @foreach (var letter in TopRowVisibleKeyboard)
@@ -55,5 +66,4 @@
             }
         </div>
     </section>
-    <button class="RestartGameButton" @onclick="RestartGame">Restart game</button>
 </div>

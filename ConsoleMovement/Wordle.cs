@@ -51,7 +51,7 @@ public class Wordle
 
     private void LoadRandomCodleAnswer()
     {
-        var lines = File.ReadAllLines("randompickerwordlist.txt");
+        var lines = File.ReadAllLines("ExpandedWordList.txt");
         var random = new Random();
         int index = random.Next(lines.Length);
 
