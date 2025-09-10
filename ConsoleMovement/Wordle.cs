@@ -77,18 +77,11 @@ public class Wordle
                !guess.All(char.IsDigit);
     }
 
-    public class LetterFeedback
+    public class LetterFeedback(char letter, StateEnum state, int position)
     {
-        public char Letter { get; set; }
-        public string State { get; set; }
-        public int Position { get; set; }
-
-        public LetterFeedback(char letter, string state, int position)
-        {
-            Letter = letter;
-            State = state;
-            Position = position;
-        }
+        public char Letter { get; set; } = letter;
+        public StateEnum State { get; set; } = state;
+        public int Position { get; set; } = position;
     }
 
     public string MakeComputerGuess(List<LetterFeedback> previousFeedback)
@@ -106,33 +99,24 @@ public class Wordle
         {
             char letter = feedback.Letter;
             int position = feedback.Position;
-            string state = feedback.State;
+            StateEnum state = feedback.State;
 
-            possibleWords = possibleWords.Where(word =>
+            possibleWords = [.. possibleWords.Where(word =>
             {
-                if (state == "correct")
+                return state switch
                 {
-                    return word[position] == letter;
-                }
-                else if (state == "present")
-                {
-                    return word.Contains(letter) && word[position] != letter;
-                }
-                else if (state == "absent")
-                {
-                    return !word.Contains(letter);
-                }
-
-                return true;
-            }).ToList();
+                    StateEnum.Correct => word[position] == letter,
+                    StateEnum.Present => word.Contains(letter) && word[position] != letter,
+                    StateEnum.Absent => !word.Contains(letter),
+                    _ => true,
+                };
+            })];
         }
 
         if (possibleWords.Count == 0)
         {
             Console.WriteLine("No valid words left based on feedback. Picking random.");
-            possibleWords = allWords
-                .Where(word => !ComputerGuessedWordsList.Contains(word))
-                .ToList();
+            possibleWords = [.. allWords.Where(word => !ComputerGuessedWordsList.Contains(word))];
         }
         else
         {

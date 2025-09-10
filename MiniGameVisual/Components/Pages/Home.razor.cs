@@ -1,6 +1,7 @@
 ﻿using ConsoleMovement;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Collections.Immutable;
 using System.Diagnostics.Metrics;
 using static ConsoleMovement.Wordle;
 
@@ -74,7 +75,7 @@ public partial class Home
         }
     }
 
-    private void SendCharAndState(char letter, string state, int position)
+    private void SendCharAndState(char letter, StateEnum state, int position)
     {
         LastGuessFeedback.Add(new LetterFeedback(letter, state, position));
     }
@@ -155,7 +156,7 @@ public partial class Home
             {
                 gridStyles[CurrentRow, i] = "correct";
                 UpdateKeyboardStyle(letter, "CorrectLetter");
-                SendCharAndState(letter, "correct", i);
+                SendCharAndState(letter, StateEnum.Correct, i);
                 matchedCounts[letter] = matchedCounts.GetValueOrDefault(letter) + 1;
             }
         }
@@ -173,14 +174,14 @@ public partial class Home
             {
                 gridStyles[CurrentRow, i] = "present";
                 UpdateKeyboardStyle(letter, "PresentLetter");
-                SendCharAndState(letter, "present", i);
+                SendCharAndState(letter, StateEnum.Present, i);
                 matchedCounts[letter] = matchedSoFar + 1;
             }
             else
             {
                 gridStyles[CurrentRow, i] = "absent";
                 UpdateKeyboardStyle(letter, "AbsentLetter");
-                SendCharAndState(letter, "absent", i);
+                SendCharAndState(letter, StateEnum.Absent, i);
             }
         }
     }
@@ -189,15 +190,16 @@ public partial class Home
     {
         string key = letter.ToString().ToUpper();
 
-        if (!VisibleKeyboardStyle.ContainsKey(key) ||
-            (style == "PresentLetter" && VisibleKeyboardStyle[key] == "AbsentLetter") ||
+        if (!VisibleKeyboardStyle.TryGetValue(key, out string? value) ||
+            (style == "PresentLetter" && value == "AbsentLetter") ||
             style == "CorrectLetter")
         {
-            VisibleKeyboardStyle[key] = style;
+            value = style;
+            VisibleKeyboardStyle[key] = value;
         }
     }
 
-    private void RestartGame()
+    private async Task RestartGame()
     {
         wordle.Reset();
         CurrentGuess = string.Empty;
@@ -214,28 +216,18 @@ public partial class Home
             }
         }
 
-        WordleResetFix.FocusAsync();
+        await WordleResetFix.FocusAsync();
     }
 
-    private string LetterColorChange(string letter)
-    {
-        if (VisibleKeyboardStyle.TryGetValue(letter, out var style))
-        {
-            return style;
-        }
-        return "";
-    }
+    private string LetterColorChange(string letter) =>
+        (VisibleKeyboardStyle.TryGetValue(letter, out var style)) ? style : string.Empty;
 
-    private static bool CheckIfGuessIsValidWord(string ValidGuess)
-    {
-        var lines = File.ReadAllLines("combined_wordlist.txt");
-        foreach (var line in lines)
-        {
-            if (line.StartsWith(ValidGuess))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+    // Replace this line:
+    // readonly static string[] lines = Array.Sort(File.ReadAllLines("combined_wordlist.txt"));
+
+    // With this corrected line:
+    readonly static string[] lines = File.ReadAllLines("combined_wordlist.txt").OrderBy(line => line).ToArray();
+
+    private static bool CheckIfGuessIsValidWord(string ValidGuess) => Array.BinarySearch(lines, ValidGuess) > 0;
+        //lines.Any((line) => line.StartsWith(ValidGuess));
 }
