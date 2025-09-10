@@ -113,17 +113,17 @@ input:focus {
     caret-color: transparent;
 }
 
-.correct, .CorrectLetter {
+.correct, .KeyboardButton.CorrectLetter {
     background-color: limegreen;
     color: whitesmoke;
 }
 
-.present, .PresentLetter {
+.present, .KeyboardButton.PresentLetter {
     background-color: goldenrod;
     color: whitesmoke;
 }
 
-.absent, .AbsentLetter {
+.absent, .KeyboardButton.AbsentLetter {
     background-color: gray;
     color: whitesmoke;
 }
