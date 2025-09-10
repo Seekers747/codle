@@ -13,6 +13,7 @@ public class Wordle
     private int ChancesLeft = 6;
     public string Message { get; private set; } = "Waiting for your guess...";
     public bool GameOver { get; private set; } = false;
+    public List<string> ComputerGuessedWordsList = [];
 
     public void StartGame()
     {
@@ -66,6 +67,7 @@ public class Wordle
         Message = "Waiting for your guess...";
         GameOver = false;
         LoadRandomCodleAnswer();
+        ComputerGuessedWordsList.Clear();
     }
 
     private static bool IsValidGuess(string guess)
@@ -73,5 +75,76 @@ public class Wordle
         return !string.IsNullOrWhiteSpace(guess) &&
                guess.Length == 5 &&
                !guess.All(char.IsDigit);
+    }
+
+    public class LetterFeedback
+    {
+        public char Letter { get; set; }
+        public string State { get; set; }
+        public int Position { get; set; }
+
+        public LetterFeedback(char letter, string state, int position)
+        {
+            Letter = letter;
+            State = state;
+            Position = position;
+        }
+    }
+
+    public string MakeComputerGuess(List<LetterFeedback> previousFeedback)
+    {
+        var allWords = File.ReadAllLines("ExpandedWordList.txt")
+            .Select(line => line.Split(':')[0].Trim().ToLower())
+            .Where(word => word.Length == 5)
+            .ToList();
+
+        var possibleWords = allWords
+            .Where(word => !ComputerGuessedWordsList.Contains(word))
+            .ToList();
+
+        foreach (var feedback in previousFeedback)
+        {
+            char letter = feedback.Letter;
+            int position = feedback.Position;
+            string state = feedback.State;
+
+            possibleWords = possibleWords.Where(word =>
+            {
+                if (state == "correct")
+                {
+                    return word[position] == letter;
+                }
+                else if (state == "present")
+                {
+                    return word.Contains(letter) && word[position] != letter;
+                }
+                else if (state == "absent")
+                {
+                    return !word.Contains(letter);
+                }
+
+                return true;
+            }).ToList();
+        }
+
+        if (possibleWords.Count == 0)
+        {
+            Console.WriteLine("No valid words left based on feedback. Picking random.");
+            possibleWords = allWords
+                .Where(word => !ComputerGuessedWordsList.Contains(word))
+                .ToList();
+        }
+        else
+        {
+            Console.WriteLine("Found some feedback to work with.");
+        }
+
+        var random = new Random();
+        string computerGuess = possibleWords[random.Next(possibleWords.Count)];
+
+        ComputerGuessedWordsList.Add(computerGuess);
+
+        Console.WriteLine($"Computer guesses: {computerGuess}");
+        return computerGuess;
     }
 }

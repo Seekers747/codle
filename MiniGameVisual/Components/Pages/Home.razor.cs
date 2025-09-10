@@ -1,6 +1,8 @@
 ﻿using ConsoleMovement;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Diagnostics.Metrics;
+using static ConsoleMovement.Wordle;
 
 namespace MiniGameVisual.Components.Pages;
 
@@ -18,6 +20,8 @@ public partial class Home
     private readonly string[] MiddleRowVisibleKeyboard = ["A", "S", "D", "F", "G", "H", "J", "K", "L" ];
     private readonly string[] BottomRowVisibleKeyboard = ["Z", "X", "C", "V", "B", "N", "M"];
     private readonly Dictionary<string, string> VisibleKeyboardStyle = [];
+    private readonly List<Wordle.LetterFeedback> LastGuessFeedback = [];
+
 
     protected override void OnInitialized()
     {
@@ -34,6 +38,45 @@ public partial class Home
         var evt = new KeyboardEventArgs { Key = letter, Code = letter };
         Console.WriteLine(evt);
         HandleKeyPress(evt);
+    }
+
+    private async Task SendComputerGuessAsync(string ComputerGuess)
+    {
+        foreach (char letter in ComputerGuess)
+        {
+            var evt = new KeyboardEventArgs
+            {
+                Key = letter.ToString(),
+                Code = $"Key{char.ToUpper(letter)}"
+            };
+            HandleKeyPress(evt);
+            await Task.Delay(200);
+            StateHasChanged();
+        }
+
+        var enterEvt = new KeyboardEventArgs
+        {
+            Key = "Enter",
+            Code = "Enter"
+        };
+        LastGuessFeedback.Clear();
+        HandleKeyPress(enterEvt);
+    }
+
+    private async Task RunComputerAttemptsAsync()
+    {
+        for (int i = 0; i < 6 && !wordle.GameOver; i++)
+        {
+            string guess = wordle.MakeComputerGuess(LastGuessFeedback);
+            await SendComputerGuessAsync(guess);
+            StateHasChanged();
+            await Task.Delay(1500);
+        }
+    }
+
+    private void SendCharAndState(char letter, string state, int position)
+    {
+        LastGuessFeedback.Add(new LetterFeedback(letter, state, position));
     }
 
     private void HandleKeyPress(KeyboardEventArgs evt)
@@ -112,6 +155,7 @@ public partial class Home
             {
                 gridStyles[CurrentRow, i] = "correct";
                 UpdateKeyboardStyle(letter, "CorrectLetter");
+                SendCharAndState(letter, "correct", i);
                 matchedCounts[letter] = matchedCounts.GetValueOrDefault(letter) + 1;
             }
         }
@@ -129,12 +173,14 @@ public partial class Home
             {
                 gridStyles[CurrentRow, i] = "present";
                 UpdateKeyboardStyle(letter, "PresentLetter");
+                SendCharAndState(letter, "present", i);
                 matchedCounts[letter] = matchedSoFar + 1;
             }
             else
             {
                 gridStyles[CurrentRow, i] = "absent";
                 UpdateKeyboardStyle(letter, "AbsentLetter");
+                SendCharAndState(letter, "absent", i);
             }
         }
     }
