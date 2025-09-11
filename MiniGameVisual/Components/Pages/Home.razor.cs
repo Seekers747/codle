@@ -27,6 +27,7 @@ public partial class Home
     private int elapsedSeconds = 0;
     private int? savedTime = null;
     private System.Threading.Timer? timer;
+    private List<LeaderboardEntry> leaderboard = [];
 
     protected override void OnInitialized()
     {
@@ -43,7 +44,7 @@ public partial class Home
 
     private void OnPhysicalKeyboardClick(KeyboardEventArgs evt)
     {
-        if (!showPopup) HandleKeyPress(evt);
+        if (!showPopup && !wordle.GameOver) HandleKeyPress(evt);
     }
 
     private void OnVisibleKeyboardClick(string letter)
@@ -82,6 +83,7 @@ public partial class Home
         await RestartGame();
         computerCancelSource = new CancellationTokenSource();
         var token = computerCancelSource.Token;
+        wordle.DidComputerPlay = true;
 
         for (int i = 0; i < 6; i++)
         {
@@ -165,7 +167,11 @@ public partial class Home
         wordle.MakeGuess(CurrentGuess);
         CheckCorrectLetters(CurrentGuess);
 
-        if (wordle.GameOver) return;
+        if (wordle.GameOver)
+        {
+            if (string.Equals(CurrentGuess, wordle.WordleWord, StringComparison.OrdinalIgnoreCase)) GiveDataToLeaderboard();
+            return;
+        }
 
         CurrentGuess = string.Empty;
         CurrentRow++;
@@ -301,5 +307,35 @@ public partial class Home
         if (timer == null) return;
         timer.Dispose();
         timer = null;
+    }
+    public class LeaderboardEntry
+    {
+        public required string PlayerName { get; set; }
+        public TimeSpan TimeTaken { get; set; }
+        public int Attempts { get; set; }
+    }
+
+    private void GiveDataToLeaderboard()
+    {
+        var entry = new LeaderboardEntry
+        {
+            PlayerName = "Player1",
+            TimeTaken = TimeSpan.FromSeconds(elapsedSeconds),
+            Attempts = CurrentRow
+        };
+
+        leaderboard.Add(entry);
+        leaderboard = [.. leaderboard
+            .OrderBy(e => e.TimeTaken)
+            .ThenBy(e => e.Attempts)
+            .Take(10)];
+    }
+
+    private static string FormatTime(TimeSpan time)
+    {
+        if (time.TotalSeconds < 60)
+            return $"{time.Seconds}s";
+        else
+            return $"{time.Minutes}m {time.Seconds}s";
     }
 }

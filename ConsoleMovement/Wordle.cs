@@ -15,6 +15,7 @@ public class Wordle
     public bool GameOver { get; private set; } = false;
     public List<string> ComputerGuessedWordsList = [];
     private string? UserChosenWord = null;
+    public bool DidComputerPlay { get; set; } = false;
 
     public void StartGame()
     {
@@ -89,6 +90,7 @@ public class Wordle
     {
         ChancesLeft = 6;
         Message = "Waiting for your guess...";
+        DidComputerPlay = false;
         GameOver = false;
         LoadRandomCodleAnswer();
         ComputerGuessedWordsList.Clear();

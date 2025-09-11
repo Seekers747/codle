@@ -35,16 +35,29 @@
         <div class="LeaderboardBox">
             <h3 class="WordleSubtitleStyling">Leaderboard</h3>
             <ul class="LeaderboardList">
-                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer2</span> <span class="LeaderboardScore">52s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer3</span> <span class="LeaderboardScore">1m 12s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer2</span> <span class="LeaderboardScore">52s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer3</span> <span class="LeaderboardScore">1m 12s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer2</span> <span class="LeaderboardScore">52s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer3</span> <span class="LeaderboardScore">1m 12s</span></li>
-                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
+                <li class="LeaderboardHeader">
+                    <span class="LeaderboardName"><strong>Name</strong></span>
+                    <span class="LeaderboardScore"><strong>Score</strong></span>
+                </li>
+
+                @for (int i = 0; i < 10; i++)
+                {
+                    if (i < leaderboard.Count)
+                    {
+                        var entry = leaderboard[i];
+                        <li>
+                            <span class="LeaderboardName">@entry.PlayerName</span>
+                            <span class="LeaderboardScore">@FormatTime(entry.TimeTaken)</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <span class="LeaderboardName">---</span>
+                            <span class="LeaderboardScore">---</span>
+                        </li>
+                    }
+                }
             </ul>
         </div>
     </div>
