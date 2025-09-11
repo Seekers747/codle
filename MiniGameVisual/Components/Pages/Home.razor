@@ -14,12 +14,7 @@
             <div class="AttemptRow">
                 @for (int x = 0; x < 5; x++)
                 {
-                    <input class="LetterCell @gridStyles[y, x]"
-                           type="text"
-                           maxlength="1"
-                           readonly="true"
-                           aria-label="Letter cell"
-                           @bind="@grid[y, x]" />
+                    <span class="LetterCell @gridStyles[y, x]">@grid[y, x]</span>
                 }
             </div>
         }
@@ -33,7 +28,45 @@
             @(wordle.GameOver ? wordle.WordleWordExplain : "The meaning of the word will be shown after the game is over.")
         </h3>
     </div>
+    <div class="TopPageTitle PositionTimer">
+        <h3 class="WordleSubtitleStyling">Elapsed time in seconds: @elapsedSeconds</h3>
+    </div>
+    <div class="TopPageTitle PositionLeaderboard">
+        <div class="LeaderboardBox">
+            <h3 class="WordleSubtitleStyling">Leaderboard</h3>
+            <ul class="LeaderboardList">
+                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer2</span> <span class="LeaderboardScore">52s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer3</span> <span class="LeaderboardScore">1m 12s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer2</span> <span class="LeaderboardScore">52s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer3</span> <span class="LeaderboardScore">1m 12s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer2</span> <span class="LeaderboardScore">52s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer3</span> <span class="LeaderboardScore">1m 12s</span></li>
+                <li><span class="LeaderboardName">DummyPlayer1</span> <span class="LeaderboardScore">45s</span></li>
+            </ul>
+        </div>
+    </div>
     <button class="RestartGameButton" @onclick="RestartGame">Restart game</button>
+    @if (showPopup)
+    {
+        <div class="popup-overlay">
+            <div class="popup-box">
+                <label>Click on the word that you want the bot to guess</label>
+                <div class="allowed-words-box">
+                    <ul>
+                        @foreach (var word in allowedWords)
+                        {
+                            <button @onclick="() => SubmitUserSelectedWord(word)">@word</button>
+                        }
+                    </ul>
+                </div>
+                <button @onclick="ClosePopup">Close</button>
+            </div>
+        </div>
+    }
+    <button class="LetComputerPlay" @onclick="OpenPopup">Let computer play</button>
     <section class="VisibleKeyboard" aria-label="On-screen keyboard">
         <div class="VisibleKeyboardRow">
             @foreach (var letter in TopRowVisibleKeyboard)
@@ -66,5 +99,4 @@
             }
         </div>
     </section>
-    <button @onclick="RunComputerAttemptsAsync">Let Computer Play</button>
 </div>

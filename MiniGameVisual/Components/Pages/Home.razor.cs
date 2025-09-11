@@ -22,16 +22,28 @@ public partial class Home
     private readonly string[] BottomRowVisibleKeyboard = ["Z", "X", "C", "V", "B", "N", "M"];
     private readonly Dictionary<string, string> VisibleKeyboardStyle = [];
     private readonly List<Wordle.LetterFeedback> LastGuessFeedback = [];
-
+    private CancellationTokenSource? computerCancelSource;
+    readonly List<string> allowedWords = Wordle.LoadAllWords();
+    private int elapsedSeconds = 0;
+    private int? savedTime = null;
+    private System.Threading.Timer? timer;
 
     protected override void OnInitialized()
     {
         wordle.StartGame();
+        for (int y = 0; y < 6; y++)
+        {
+            for (int x = 0; x < 5; x++)
+            {
+                grid[y, x] = ' ';
+                gridStyles[y, x] = string.Empty;
+            }
+        }
     }
 
     private void OnPhysicalKeyboardClick(KeyboardEventArgs evt)
     {
-        HandleKeyPress(evt);
+        if (!showPopup) HandleKeyPress(evt);
     }
 
     private void OnVisibleKeyboardClick(string letter)
@@ -51,6 +63,7 @@ public partial class Home
                 Code = $"Key{char.ToUpper(letter)}"
             };
             HandleKeyPress(evt);
+            if (wordle.GameOver) break;
             await Task.Delay(200);
             StateHasChanged();
         }
@@ -66,12 +79,30 @@ public partial class Home
 
     private async Task RunComputerAttemptsAsync()
     {
-        for (int i = 0; i < 6 && !wordle.GameOver; i++)
+        await RestartGame();
+        computerCancelSource = new CancellationTokenSource();
+        var token = computerCancelSource.Token;
+
+        for (int i = 0; i < 6; i++)
         {
+            if (wordle.GameOver || token.IsCancellationRequested)
+                break;
+
             string guess = wordle.MakeComputerGuess(LastGuessFeedback);
             await SendComputerGuessAsync(guess);
             StateHasChanged();
-            await Task.Delay(1500);
+
+            if (wordle.GameOver || token.IsCancellationRequested)
+                break;
+
+            try
+            {
+                await Task.Delay(1500, token);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
         }
     }
 
@@ -85,22 +116,19 @@ public partial class Home
         CurrentGuess = CurrentGuess.ToLower();
         Console.WriteLine($"Key: {evt.Key}, Code: {evt.Code}");
 
-        if (evt.Code == "Backspace")
+        switch (evt.Code)
         {
-            HandleBackspace();
-            return;
+            case "Backspace":
+                HandleBackspace();
+                return;
+            case "Enter":
+                HandleEnter();
+                return;
         }
 
         if (evt.Key.Length == 1 && char.IsLetter(evt.Key[0]))
         {
             HandleLetterInput(evt.Key[0]);
-            return;
-        }
-
-        if (evt.Code == "Enter")
-        {
-            HandleEnter();
-            return;
         }
     }
 
@@ -113,6 +141,10 @@ public partial class Home
         grid[CurrentRow, CurrentColumn] = upperKey;
         gridStyles[CurrentRow, CurrentColumn] = "typed";
         CurrentColumn++;
+        if (grid[0, 0] != ' ' && timer == null)
+        {
+            StartTimer();
+        }
     }
 
     private void HandleBackspace()
@@ -201,6 +233,9 @@ public partial class Home
 
     private async Task RestartGame()
     {
+        computerCancelSource?.Cancel();
+        computerCancelSource = null;
+
         wordle.Reset();
         CurrentGuess = string.Empty;
         CurrentRow = 0;
@@ -222,12 +257,49 @@ public partial class Home
     private string LetterColorChange(string letter) =>
         (VisibleKeyboardStyle.TryGetValue(letter, out var style)) ? style : string.Empty;
 
-    // Replace this line:
-    // readonly static string[] lines = Array.Sort(File.ReadAllLines("combined_wordlist.txt"));
-
-    // With this corrected line:
-    readonly static string[] lines = File.ReadAllLines("combined_wordlist.txt").OrderBy(line => line).ToArray();
+    readonly static string[] lines = [.. File.ReadAllLines("combined_wordlist.txt").OrderBy(line => line)];
 
     private static bool CheckIfGuessIsValidWord(string ValidGuess) => Array.BinarySearch(lines, ValidGuess) > 0;
-        //lines.Any((line) => line.StartsWith(ValidGuess));
+
+    private bool showPopup = false;
+    private void OpenPopup() => showPopup = true;
+    private void ClosePopup() => showPopup = false;
+
+    public async Task SubmitUserSelectedWord(string UserGivenGuessable)
+    {
+        ClosePopup();
+        wordle.SetUserChosenWord(UserGivenGuessable);
+        StateHasChanged();
+        await RunComputerAttemptsAsync();
+    }
+
+    private void StartTimer()
+    {
+        timer = new Timer(_ =>
+        {
+            elapsedSeconds++;
+
+            if (wordle.GameOver)
+            {
+                StopAndSave();
+            }
+
+            InvokeAsync(StateHasChanged);
+        }, null, 0, 1000);
+    }
+
+    private void StopAndSave()
+    {
+        Dispose();
+        savedTime = elapsedSeconds;
+        Console.WriteLine($"Game finished in {savedTime} seconds.");
+        elapsedSeconds = 0;
+    }
+
+    public void Dispose()
+    {
+        if (timer == null) return;
+        timer.Dispose();
+        timer = null;
+    }
 }

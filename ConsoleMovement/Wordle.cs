@@ -14,6 +14,7 @@ public class Wordle
     public string Message { get; private set; } = "Waiting for your guess...";
     public bool GameOver { get; private set; } = false;
     public List<string> ComputerGuessedWordsList = [];
+    private string? UserChosenWord = null;
 
     public void StartGame()
     {
@@ -55,10 +56,33 @@ public class Wordle
         var lines = File.ReadAllLines("ExpandedWordList.txt");
         var random = new Random();
         int index = random.Next(lines.Length);
-
         var parts = lines[index].Split(':');
-        WordleWord = parts[0].Trim().ToLower();
-        WordleWordExplain = parts.Length > 1 ? parts[1].Trim() : "Geen uitleg beschikbaar.";
+
+        if (!string.IsNullOrWhiteSpace(UserChosenWord))
+        {
+            WordleWord = UserChosenWord;
+
+            string? match = lines.FirstOrDefault(line =>
+                line.StartsWith(UserChosenWord + ":", StringComparison.OrdinalIgnoreCase));
+
+            if (match == null)
+            {
+                WordleWordExplain = "Geen uitleg beschikbaar.";
+            }
+            else
+            {
+                var userParts = match.Split(':');
+                WordleWordExplain = userParts.Length > 1 ? userParts[1].Trim() : "Geen uitleg beschikbaar.";
+            }
+
+            UserChosenWord = null;
+            return;
+        }
+        else
+        {
+            WordleWord = parts[0].Trim().ToLower();
+            WordleWordExplain = parts.Length > 1 ? parts[1].Trim() : "Geen uitleg beschikbaar.";
+        }
     }
 
     public void Reset()
@@ -84,16 +108,17 @@ public class Wordle
         public int Position { get; set; } = position;
     }
 
+    public static List<string> LoadAllWords()
+    {
+        return [.. File.ReadAllLines("ExpandedWordList.txt")
+            .Select(line => line.Split(':')[0].Trim().ToLower())
+            .Where(word => word.Length == 5)];
+    }
+
     public string MakeComputerGuess(List<LetterFeedback> previousFeedback)
     {
-        var allWords = File.ReadAllLines("ExpandedWordList.txt")
-            .Select(line => line.Split(':')[0].Trim().ToLower())
-            .Where(word => word.Length == 5)
-            .ToList();
-
-        var possibleWords = allWords
-            .Where(word => !ComputerGuessedWordsList.Contains(word))
-            .ToList();
+        List<string> allWords = LoadAllWords();
+        List<string> possibleWords = [.. allWords.Where(word => !ComputerGuessedWordsList.Contains(word))];
 
         foreach (var feedback in previousFeedback)
         {
@@ -131,4 +156,5 @@ public class Wordle
         Console.WriteLine($"Computer guesses: {computerGuess}");
         return computerGuess;
     }
+    public void SetUserChosenWord(string word) => UserChosenWord = word.Trim().ToLower();
 }
