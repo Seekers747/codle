@@ -38,6 +38,7 @@
                 <li class="LeaderboardHeader">
                     <span class="LeaderboardName"><strong>Name</strong></span>
                     <span class="LeaderboardScore"><strong>Score</strong></span>
+                    <span class="LeaderboardAttempts"><strong>Attempts</strong></span>
                 </li>
 
                 @for (int i = 0; i < 10; i++)
@@ -48,6 +49,7 @@
                         <li>
                             <span class="LeaderboardName">@entry.PlayerName</span>
                             <span class="LeaderboardScore">@FormatTime(entry.TimeTaken)</span>
+                            <span class="LeaderboardAttempts">@entry.Attempts</span>
                         </li>
                     }
                     else
@@ -55,6 +57,7 @@
                         <li>
                             <span class="LeaderboardName">---</span>
                             <span class="LeaderboardScore">---</span>
+                            <span class="LeaderboardAttempts">---</span>
                         </li>
                     }
                 }

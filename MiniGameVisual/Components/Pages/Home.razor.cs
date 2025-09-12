@@ -246,6 +246,7 @@ public partial class Home
         CurrentRow = 0;
         CurrentColumn = 0;
         VisibleKeyboardStyle.Clear();
+        LastGuessFeedback.Clear();
 
         for (int y = 0; y < 6; y++)
         {
@@ -320,7 +321,7 @@ public partial class Home
         {
             PlayerName = "Player1",
             TimeTaken = TimeSpan.FromSeconds(elapsedSeconds),
-            Attempts = CurrentRow
+            Attempts = CurrentRow + 1
         };
 
         leaderboard.Add(entry);
@@ -336,5 +337,10 @@ public partial class Home
             return $"{time.Seconds}s";
         else
             return $"{time.Minutes}m {time.Seconds}s";
+    }
+
+    private void GivePlayerName()
+    {
+        // get teh player name to put on leaderboard
     }
 }
