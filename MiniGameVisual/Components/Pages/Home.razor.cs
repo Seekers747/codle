@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System.Collections.Immutable;
-using System.Diagnostics.Metrics;
 using static ConsoleMovement.Wordle;
 
 namespace MiniGameVisual.Components.Pages;
@@ -167,10 +166,10 @@ public partial class Home
         wordle.MakeGuess(CurrentGuess);
         CheckCorrectLetters(CurrentGuess);
 
-        if (wordle.GameOver)
+        if (string.Equals(CurrentGuess, wordle.WordleWord, StringComparison.OrdinalIgnoreCase)
+            && !wordle.DidComputerPlay)
         {
-            if (string.Equals(CurrentGuess, wordle.WordleWord, StringComparison.OrdinalIgnoreCase)) GiveDataToLeaderboard();
-            return;
+            GiveDataToLeaderboard();
         }
 
         CurrentGuess = string.Empty;
