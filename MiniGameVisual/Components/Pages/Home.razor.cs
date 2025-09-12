@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System.Collections.Immutable;
-using static ConsoleMovement.Wordle;
+using static ConsoleMovement.Codle;
 
 namespace MiniGameVisual.Components.Pages;
 
@@ -13,16 +13,16 @@ public partial class Home
     private readonly string[,] gridStyles = new string[7, 6];
     private int CurrentColumn;
     private int CurrentRow;
-    private readonly Wordle wordle = new();
+    private readonly Codle codle = new();
     public List<char> CheckedLetters { get; private set; } = [];
-    private ElementReference WordleResetFix;
+    private ElementReference CodleResetFix;
     private readonly string[] TopRowVisibleKeyboard = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
     private readonly string[] MiddleRowVisibleKeyboard = ["A", "S", "D", "F", "G", "H", "J", "K", "L" ];
     private readonly string[] BottomRowVisibleKeyboard = ["Z", "X", "C", "V", "B", "N", "M"];
     private readonly Dictionary<string, string> VisibleKeyboardStyle = [];
-    private readonly List<Wordle.LetterFeedback> LastGuessFeedback = [];
+    private readonly List<Codle.LetterFeedback> LastGuessFeedback = [];
     private CancellationTokenSource? computerCancelSource;
-    readonly List<string> allowedWords = Wordle.LoadAllWords();
+    readonly List<string> allowedWords = Codle.LoadAllWords();
     private int elapsedSeconds = 0;
     private int? savedTime = null;
     private System.Threading.Timer? timer;
@@ -30,7 +30,7 @@ public partial class Home
 
     protected override void OnInitialized()
     {
-        wordle.StartGame();
+        codle.StartGame();
         for (int y = 0; y < 6; y++)
         {
             for (int x = 0; x < 5; x++)
@@ -43,7 +43,7 @@ public partial class Home
 
     private void OnPhysicalKeyboardClick(KeyboardEventArgs evt)
     {
-        if (!showPopup && !wordle.GameOver) HandleKeyPress(evt);
+        if (!showPopup && !codle.GameOver) HandleKeyPress(evt);
     }
 
     private void OnVisibleKeyboardClick(string letter)
@@ -63,7 +63,7 @@ public partial class Home
                 Code = $"Key{char.ToUpper(letter)}"
             };
             HandleKeyPress(evt);
-            if (wordle.GameOver) break;
+            if (codle.GameOver) break;
             await Task.Delay(200);
             StateHasChanged();
         }
@@ -82,18 +82,18 @@ public partial class Home
         await RestartGame();
         computerCancelSource = new CancellationTokenSource();
         var token = computerCancelSource.Token;
-        wordle.DidComputerPlay = true;
+        codle.DidComputerPlay = true;
 
         for (int i = 0; i < 6; i++)
         {
-            if (wordle.GameOver || token.IsCancellationRequested)
+            if (codle.GameOver || token.IsCancellationRequested)
                 break;
 
-            string guess = wordle.MakeComputerGuess(LastGuessFeedback);
+            string guess = codle.MakeComputerGuess(LastGuessFeedback);
             await SendComputerGuessAsync(guess);
             StateHasChanged();
 
-            if (wordle.GameOver || token.IsCancellationRequested)
+            if (codle.GameOver || token.IsCancellationRequested)
                 break;
 
             try
@@ -163,11 +163,11 @@ public partial class Home
         if (CurrentGuess.Length != 5 || CurrentRow > 6 || !CurrentGuess.All(char.IsLetter)) return;
         if (!CheckIfGuessIsValidWord(CurrentGuess)) return;
 
-        wordle.MakeGuess(CurrentGuess);
+        codle.MakeGuess(CurrentGuess);
         CheckCorrectLetters(CurrentGuess);
 
-        if (string.Equals(CurrentGuess, wordle.WordleWord, StringComparison.OrdinalIgnoreCase)
-            && !wordle.DidComputerPlay)
+        if (string.Equals(CurrentGuess, codle.CodleWord, StringComparison.OrdinalIgnoreCase)
+            && !codle.DidComputerPlay)
         {
             GiveDataToLeaderboard();
         }
@@ -179,7 +179,7 @@ public partial class Home
 
     private void CheckCorrectLetters(string guess)
     {
-        string target = wordle.WordleWord;
+        string target = codle.CodleWord;
         var targetCounts = new Dictionary<char, int>();
         var matchedCounts = new Dictionary<char, int>();
 
@@ -241,7 +241,7 @@ public partial class Home
         computerCancelSource?.Cancel();
         computerCancelSource = null;
 
-        wordle.Reset();
+        codle.Reset();
         CurrentGuess = string.Empty;
         CurrentRow = 0;
         CurrentColumn = 0;
@@ -257,7 +257,7 @@ public partial class Home
             }
         }
 
-        await WordleResetFix.FocusAsync();
+        await CodleResetFix.FocusAsync();
     }
 
     private string LetterColorChange(string letter) =>
@@ -274,7 +274,7 @@ public partial class Home
     public async Task SubmitUserSelectedWord(string UserGivenGuessable)
     {
         ClosePopup();
-        wordle.SetUserChosenWord(UserGivenGuessable);
+        codle.SetUserChosenWord(UserGivenGuessable);
         StateHasChanged();
         await RunComputerAttemptsAsync();
     }
@@ -285,7 +285,7 @@ public partial class Home
         {
             elapsedSeconds++;
 
-            if (wordle.GameOver)
+            if (codle.GameOver)
             {
                 StopAndSave();
             }
@@ -341,6 +341,5 @@ public partial class Home
 
     private void GivePlayerName()
     {
-        // get teh player name to put on leaderboard
     }
 }

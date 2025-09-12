@@ -10,7 +10,7 @@ body {
     justify-content: center;
 }
 
-.Wordle {
+.Codle {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -140,7 +140,7 @@ input:focus {
     padding: 0;
 }
 
-.WordleMessageNotice {
+.CodleMessageNotice {
     color: #2c3e50;
     font-size: 2rem;
     font-weight: 500;
@@ -160,7 +160,7 @@ input:focus {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.WordleTitleStyling {
+.CodleTitleStyling {
     font-size: 3rem;
     font-weight: 700;
     color: #2c3e50;
@@ -169,7 +169,7 @@ input:focus {
     letter-spacing: 2px;
 }
 
-.WordleSubtitleStyling {
+.CodleSubtitleStyling {
     font-size: 1.25rem;
     font-weight: 400;
     color: #7f8c8d;

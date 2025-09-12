@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleMovement;
 
-public class Wordle
+public class Codle
 {
-    public string WordleWord { get; private set; } = string.Empty;
-    public string WordleWordExplain { get; private set; } = string.Empty;
+    public string CodleWord { get; private set; } = string.Empty;
+    public string CodleWordExplain { get; private set; } = string.Empty;
     private int ChancesLeft = 6;
     public string Message { get; private set; } = "Waiting for your guess...";
     public bool GameOver { get; private set; } = false;
@@ -37,7 +37,7 @@ public class Wordle
             return;
         }
 
-        if (guess == WordleWord)
+        if (guess == CodleWord)
         {
             Message = "You guessed the word!";
             GameOver = true;
@@ -48,7 +48,7 @@ public class Wordle
 
         GameOver = ChancesLeft == 0;
         Message = GameOver
-            ? $"You didn't guess the word! The correct word was: {WordleWord}!"
+            ? $"You didn't guess the word! The correct word was: {CodleWord}!"
             : $"Not the right word, you have {ChancesLeft} guesses left!";
     }
 
@@ -61,19 +61,19 @@ public class Wordle
 
         if (!string.IsNullOrWhiteSpace(UserChosenWord))
         {
-            WordleWord = UserChosenWord;
+            CodleWord = UserChosenWord;
 
             string? match = lines.FirstOrDefault(line =>
                 line.StartsWith(UserChosenWord + ":", StringComparison.OrdinalIgnoreCase));
 
             if (match == null)
             {
-                WordleWordExplain = "Geen uitleg beschikbaar.";
+                CodleWordExplain = "Geen uitleg beschikbaar.";
             }
             else
             {
                 var userParts = match.Split(':');
-                WordleWordExplain = userParts.Length > 1 ? userParts[1].Trim() : "Geen uitleg beschikbaar.";
+                CodleWordExplain = userParts.Length > 1 ? userParts[1].Trim() : "Geen uitleg beschikbaar.";
             }
 
             UserChosenWord = null;
@@ -81,8 +81,8 @@ public class Wordle
         }
         else
         {
-            WordleWord = parts[0].Trim().ToLower();
-            WordleWordExplain = parts.Length > 1 ? parts[1].Trim() : "Geen uitleg beschikbaar.";
+            CodleWord = parts[0].Trim().ToLower();
+            CodleWordExplain = parts.Length > 1 ? parts[1].Trim() : "Geen uitleg beschikbaar.";
         }
     }
 
