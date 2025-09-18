@@ -1,6 +1,8 @@
-﻿using ConsoleMovement;
+﻿using CodleLeaderboardDb.Model;
+using ConsoleMovement;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
 using static ConsoleMovement.Codle;
 
@@ -17,20 +19,27 @@ public partial class Home
     public List<char> CheckedLetters { get; private set; } = [];
     private ElementReference CodleResetFix;
     private readonly string[] TopRowVisibleKeyboard = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
-    private readonly string[] MiddleRowVisibleKeyboard = ["A", "S", "D", "F", "G", "H", "J", "K", "L" ];
+    private readonly string[] MiddleRowVisibleKeyboard = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
     private readonly string[] BottomRowVisibleKeyboard = ["Z", "X", "C", "V", "B", "N", "M"];
     private readonly Dictionary<string, string> VisibleKeyboardStyle = [];
-    private readonly List<Codle.LetterFeedback> LastGuessFeedback = [];
+    private readonly List<LetterFeedback> LastGuessFeedback = [];
     private CancellationTokenSource? computerCancelSource;
-    readonly List<string> allowedWords = Codle.LoadAllWords();
-    private int elapsedSeconds = 0;
-    private int? savedTime = null;
-    private System.Threading.Timer? timer;
-    private List<LeaderboardEntry> leaderboard = [];
+    readonly List<string> allowedWords = LoadAllWords();
+    private int elapsedSeconds;
+    private int savedTime;
+    private Timer? timer;
+    public List<LeaderboardEntry> leaderboard = [];
+    private CancellationTokenSource? timerCts;
+    private bool ShowUsernameInputPopup = false;
 
     protected override void OnInitialized()
     {
         codle.StartGame();
+        InitializeGrid();
+    }
+
+    private void InitializeGrid()
+    {
         for (int y = 0; y < 6; y++)
         {
             for (int x = 0; x < 5; x++)
@@ -41,16 +50,16 @@ public partial class Home
         }
     }
 
-    private void OnPhysicalKeyboardClick(KeyboardEventArgs evt)
+    private async Task OnPhysicalKeyboardClick(KeyboardEventArgs evt)
     {
-        if (!showPopup && !codle.GameOver) HandleKeyPress(evt);
+        if (!showPopup && !codle.GameOver) await HandleKeyPress(evt);
     }
 
-    private void OnVisibleKeyboardClick(string letter)
+    private async Task OnVisibleKeyboardClick(string letter)
     {
         var evt = new KeyboardEventArgs { Key = letter, Code = letter };
         Console.WriteLine(evt);
-        HandleKeyPress(evt);
+        await HandleKeyPress(evt);
     }
 
     private async Task SendComputerGuessAsync(string ComputerGuess)
@@ -62,7 +71,7 @@ public partial class Home
                 Key = letter.ToString(),
                 Code = $"Key{char.ToUpper(letter)}"
             };
-            HandleKeyPress(evt);
+            await HandleKeyPress(evt);
             if (codle.GameOver) break;
             await Task.Delay(200);
             StateHasChanged();
@@ -74,7 +83,7 @@ public partial class Home
             Code = "Enter"
         };
         LastGuessFeedback.Clear();
-        HandleKeyPress(enterEvt);
+        await HandleKeyPress(enterEvt);
     }
 
     private async Task RunComputerAttemptsAsync()
@@ -112,7 +121,7 @@ public partial class Home
         LastGuessFeedback.Add(new LetterFeedback(letter, state, position));
     }
 
-    private void HandleKeyPress(KeyboardEventArgs evt)
+    private async Task HandleKeyPress(KeyboardEventArgs evt)
     {
         CurrentGuess = CurrentGuess.ToLower();
         Console.WriteLine($"Key: {evt.Key}, Code: {evt.Code}");
@@ -123,7 +132,9 @@ public partial class Home
                 HandleBackspace();
                 return;
             case "Enter":
-                HandleEnter();
+                await HandleEnter();
+                return;
+            case "Tab":
                 return;
         }
 
@@ -158,7 +169,7 @@ public partial class Home
         grid[CurrentRow, CurrentColumn] = ' ';
     }
 
-    private void HandleEnter()
+    private async Task HandleEnter()
     {
         if (CurrentGuess.Length != 5 || CurrentRow > 6 || !CurrentGuess.All(char.IsLetter)) return;
         if (!CheckIfGuessIsValidWord(CurrentGuess)) return;
@@ -169,7 +180,8 @@ public partial class Home
         if (string.Equals(CurrentGuess, codle.CodleWord, StringComparison.OrdinalIgnoreCase)
             && !codle.DidComputerPlay)
         {
-            GiveDataToLeaderboard();
+            ShowUsernameInputPopup = true;
+            await SubmitPlayerName();
         }
 
         CurrentGuess = string.Empty;
@@ -247,6 +259,9 @@ public partial class Home
         CurrentColumn = 0;
         VisibleKeyboardStyle.Clear();
         LastGuessFeedback.Clear();
+        playerName = string.Empty;
+        showNameError = false;
+        StopAndSave();
 
         for (int y = 0; y < 6; y++)
         {
@@ -281,6 +296,7 @@ public partial class Home
 
     private void StartTimer()
     {
+        timerCts = new CancellationTokenSource();
         timer = new Timer(_ =>
         {
             elapsedSeconds++;
@@ -291,55 +307,72 @@ public partial class Home
             }
 
             InvokeAsync(StateHasChanged);
-        }, null, 0, 1000);
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
     private void StopAndSave()
     {
-        Dispose();
+        DisposeTimer();
         savedTime = elapsedSeconds;
         Console.WriteLine($"Game finished in {savedTime} seconds.");
         elapsedSeconds = 0;
     }
 
-    public void Dispose()
+    public void DisposeTimer()
     {
-        if (timer == null) return;
-        timer.Dispose();
+        timer?.Dispose();
         timer = null;
-    }
-    public class LeaderboardEntry
-    {
-        public required string PlayerName { get; set; }
-        public TimeSpan TimeTaken { get; set; }
-        public int Attempts { get; set; }
+
+        timerCts?.Cancel();
+        timerCts?.Dispose();
+        timerCts = null;
     }
 
-    private void GiveDataToLeaderboard()
+    private async Task GiveDataToLeaderboard(string playerName)
     {
         var entry = new LeaderboardEntry
         {
-            PlayerName = "Player1",
-            TimeTaken = TimeSpan.FromSeconds(elapsedSeconds),
-            Attempts = CurrentRow + 1
+            Username = playerName,
+            TimeTaken = TimeSpan.FromSeconds(savedTime),
+            Attempts = CurrentRow,
+            DateAchieved = DateTime.Now
         };
 
-        leaderboard.Add(entry);
-        leaderboard = [.. leaderboard
-            .OrderBy(e => e.TimeTaken)
-            .ThenBy(e => e.Attempts)
-            .Take(10)];
+        using var context = new CodleLeaderboardContext();
+        context.LeaderboardEntries.Add(entry);
+        await context.SaveChangesAsync();
+        await RefreshLeaderboardAsync();
     }
 
-    private static string FormatTime(TimeSpan time)
+    private static string FormatTime(TimeSpan time) =>
+        time.TotalSeconds < 60 ? $"{time.Seconds}s" : $"{(int)time.TotalMinutes}m {time.Seconds}s";
+
+    private async Task RefreshLeaderboardAsync()
     {
-        if (time.TotalSeconds < 60)
-            return $"{time.Seconds}s";
+            using var context = new CodleLeaderboardContext();
+            leaderboard = await context.LeaderboardEntries
+                .OrderBy(e => e.TimeTaken)
+                .Take(10)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            await InvokeAsync(StateHasChanged);
+    }
+
+
+    private bool showNameError = false;
+    private string? playerName;
+    private async Task SubmitPlayerName()
+    {
+        if (!string.IsNullOrWhiteSpace(playerName) && playerName.Length <= 20)
+        {
+            await GiveDataToLeaderboard(playerName);
+            showNameError = false;
+            ShowUsernameInputPopup = false;
+        }
         else
-            return $"{time.Minutes}m {time.Seconds}s";
-    }
-
-    private void GivePlayerName()
-    {
+        {
+            showNameError = true;
+        }
     }
 }

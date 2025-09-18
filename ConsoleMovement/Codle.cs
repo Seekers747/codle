@@ -48,7 +48,7 @@ public class Codle
 
         GameOver = ChancesLeft == 0;
         Message = GameOver
-            ? $"You didn't guess the word! The correct word was: {CodleWord}!"
+            ? $"You didn't guess the word!<br /> The correct word was: {CodleWord}!"
             : $"Not the right word, you have {ChancesLeft} guesses left!";
     }
 

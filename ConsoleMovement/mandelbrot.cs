@@ -18,34 +18,34 @@ class Mandelbrot
 
         // Set the minimum and maximum values for the real and imaginary parts
         // Everything outside this range will be colored black
-        double minReal = -0.75, maxReal = -0.74;
-        double minImag = 0.1, maxImag = 0.11;
+        float minReal = -2.5f, maxReal = 1.0f;
+        float minImag = -1.0f, maxImag = 1.0f;
 
         // Loop over each pixel in the image
-        for (int px = 0; px < width; px++)
+        for (float px = 0; px < width; px++)
         {
-            for (int py = 0; py < height; py++)
+            for (float py = 0; py < height; py++)
             {
                 // Determine the total width and height of the rectangle in the complex plane
                 // "realspan" means the width of the rectangle and "imagspan" means the height
-                double realSpan = maxReal - minReal;
-                double imagSpan = maxImag - minImag;
+                float realSpan = maxReal - minReal;
+                float imagSpan = maxImag - minImag;
 
                 // Get the percentage (as a fraction) across the image that this pixel is
-                double xFraction = (double)px / width;
-                double yFraction = (double)py / height;
+                float xFraction = px / width;
+                float yFraction = py / height;
 
                 // Convert the fraction into an actual distance by multiplying by the span
-                double xOffset = xFraction * realSpan;
-                double yOffset = yFraction * imagSpan;
+                float xOffset = xFraction * realSpan;
+                float yOffset = yFraction * imagSpan;
 
                 // Add the offset to the minimum to get the actual coordinate of this pixel
-                double x0 = minReal + xOffset;
-                double y0 = minImag + yOffset;
+                float x0 = minReal + xOffset;
+                float y0 = minImag + yOffset;
                 // Now we have the coordinate in the complex plane for this pixel
 
                 // Assign initial values for x and y and the attempt counter
-                double x = 0, y = 0;
+                float x = 0, y = 0;
                 int attempt = 0;
 
                 // x * x + y * y basically means "the distance from the origin" but is written as the magnitude squared rather than computing a square root
@@ -55,7 +55,7 @@ class Mandelbrot
                 while (x * x + y * y <= 4 && attempt < maxAttempts)
                 {
                     // square the complex number (x + yi) and add the original coordinate (x0 + y0i)
-                    double xtemp = x * x - y * y + x0;
+                    float xtemp = x * x - y * y + x0;
 
                     // Becomes the new y value after squaring and adding the imaginery part (y0)
                     y = 2 * x * y + y0;
@@ -84,7 +84,7 @@ class Mandelbrot
                 // If the point is in the Mandelbrot set (did not escape), color it black
                 // Otherwise, use the calculated color based on the previous logic
                 SKColor color = attempt == maxAttempts ? SKColors.Black : new SKColor(r, g, b);
-                canvas.SetPixel(px, py, color);
+                canvas.SetPixel((int)px, (int)py, color);
             }
         }
 

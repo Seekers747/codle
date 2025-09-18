@@ -1,14 +1,16 @@
 ﻿@page "/"
+@using CodleLeaderboardDb.Model
+@using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
-<div class="Codle" @ref="CodleResetFix" @onkeydown="OnPhysicalKeyboardClick" tabindex="0">
+<div class="Codle" @ref="CodleResetFix" @onkeydown="OnPhysicalKeyboardClick">
     <div class="TopPageTitle">
         <h1 class="CodleTitleStyling">Codle</h1>
-        <h3 class="CodleSubtitleStyling">A software development related verison of wordle</h3>
+        <h3 class="CodleSubtitleStyling">A software development related version of wordle</h3>
     </div>
-    <div class="GuessBox">
+    <div class="GuessBox" tabindex="0" @onkeydown:preventDefault="true">
         @for (int y = 0; y < 6; y++)
         {
             <div class="AttemptRow">
@@ -20,7 +22,7 @@
         }
     </div>
     <div class="TopPageTitle PositionMessage">
-        <h1 class="CodleTitleStyling CodleMessageNotice">@codle.Message</h1>
+        <h3 class="CodleMessageNotice">@((MarkupString)codle.Message)</h3>
     </div>
     <div class="TopPageTitle PositionExplanation">
         <h1 class="CodleTitleStyling">The meaning</h1>
@@ -39,25 +41,35 @@
                     <span class="LeaderboardName"><strong>Name</strong></span>
                     <span class="LeaderboardScore"><strong>Score</strong></span>
                     <span class="LeaderboardAttempts"><strong>Attempts</strong></span>
+                    <span class="LeaderboardDate"><strong>DateAchieved</strong></span>
                 </li>
 
                 @for (int i = 0; i < 10; i++)
                 {
+                    var entryClass = i switch
+                    {
+                        0 => "GoldEntry",
+                        1 => "SilverEntry",
+                        2 => "BronzeEntry",
+                        _ => "StandardEntry"
+                    };
                     if (i < leaderboard.Count)
                     {
                         var entry = leaderboard[i];
-                        <li>
-                            <span class="LeaderboardName">@entry.PlayerName</span>
+                        <li class="@entryClass">
+                            <span class="LeaderboardName">@entry.Username</span>
                             <span class="LeaderboardScore">@FormatTime(entry.TimeTaken)</span>
                             <span class="LeaderboardAttempts">@entry.Attempts</span>
+                            <span class="LeaderboardDate">@entry.DateAchieved.ToString("yyyy-MM-dd")</span>
                         </li>
                     }
                     else
                     {
-                        <li>
+                        <li class="@entryClass">
                             <span class="LeaderboardName">---</span>
                             <span class="LeaderboardScore">---</span>
                             <span class="LeaderboardAttempts">---</span>
+                            <span class="LeaderboardDate">---</span>
                         </li>
                     }
                 }
@@ -83,6 +95,20 @@
         </div>
     }
     <button class="LetComputerPlay" @onclick="OpenPopup">Let computer play</button>
+    @if (ShowUsernameInputPopup)
+    {
+        <div class="popup-overlay">
+            <div class="popup-box">
+                <label for="playerName">Enter your name (max 20 characters):</label>
+                <input class="nameinput-popup" id="playerName" @bind="playerName" maxlength="20" />
+                <button @onclick="SubmitPlayerName">Submit</button>
+            </div>
+        </div>
+    }
+    @if (showNameError)
+    {
+        <p class="ErrorMessage">Invalid name. Please try again.</p>
+    }
     <section class="VisibleKeyboard" aria-label="On-screen keyboard">
         <div class="VisibleKeyboardRow">
             @foreach (var letter in TopRowVisibleKeyboard)
@@ -116,3 +142,9 @@
         </div>
     </section>
 </div>
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshLeaderboardAsync();
+    }
+}

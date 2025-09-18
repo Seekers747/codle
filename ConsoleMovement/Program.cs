@@ -1,10 +1,5 @@
-﻿namespace ConsoleMovement;
-internal class Program
-{
-    static readonly DrawInConsole game = new();
+﻿using ConsoleMovement;
 
-    static void Main(string[] args)
-    {
-        Mandelbrot.Run();
-    }
-}
+DrawInConsole game = new();
+
+game.Run();
