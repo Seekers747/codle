@@ -5,12 +5,12 @@
 
 <PageTitle>Home</PageTitle>
 
-<div class="Codle" @ref="CodleResetFix" @onkeydown="OnPhysicalKeyboardClick">
+<div class="Codle" @ref="CodleResetFix" @onkeydown="OnPhysicalKeyboardClick" tabindex="0">
     <div class="TopPageTitle">
         <h1 class="CodleTitleStyling">Codle</h1>
         <h3 class="CodleSubtitleStyling">A software development related version of wordle</h3>
     </div>
-    <div class="GuessBox" tabindex="0" @onkeydown:preventDefault="true">
+    <div class="GuessBox">
         @for (int y = 0; y < 6; y++)
         {
             <div class="AttemptRow">
@@ -103,11 +103,11 @@
                 <input class="nameinput-popup" id="playerName" @bind="playerName" maxlength="20" />
                 <button @onclick="SubmitPlayerName">Submit</button>
             </div>
+            @* @if (showNameError)
+            {
+                <p class="ErrorMessage">Invalid name. Please try again.</p>
+            } *@
         </div>
-    }
-    @if (showNameError)
-    {
-        <p class="ErrorMessage">Invalid name. Please try again.</p>
     }
     <section class="VisibleKeyboard" aria-label="On-screen keyboard">
         <div class="VisibleKeyboardRow">

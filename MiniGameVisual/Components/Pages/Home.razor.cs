@@ -31,6 +31,7 @@ public partial class Home
     public List<LeaderboardEntry> leaderboard = [];
     private CancellationTokenSource? timerCts;
     private bool ShowUsernameInputPopup = false;
+    public bool DidPlayerWin = false;
 
     protected override void OnInitialized()
     {
@@ -135,6 +136,7 @@ public partial class Home
                 await HandleEnter();
                 return;
             case "Tab":
+                await CodleResetFix.FocusAsync();
                 return;
         }
 
@@ -180,6 +182,7 @@ public partial class Home
         if (string.Equals(CurrentGuess, codle.CodleWord, StringComparison.OrdinalIgnoreCase)
             && !codle.DidComputerPlay)
         {
+            DidPlayerWin = true;
             ShowUsernameInputPopup = true;
             await SubmitPlayerName();
         }
@@ -253,7 +256,7 @@ public partial class Home
         computerCancelSource?.Cancel();
         computerCancelSource = null;
 
-        codle.Reset();
+        codle.Reset(DidPlayerWin);
         CurrentGuess = string.Empty;
         CurrentRow = 0;
         CurrentColumn = 0;

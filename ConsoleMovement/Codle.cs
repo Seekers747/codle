@@ -86,13 +86,16 @@ public class Codle
         }
     }
 
-    public void Reset()
+    public void Reset(bool DidPlayerWin)
     {
         ChancesLeft = 6;
         Message = "Waiting for your guess...";
         DidComputerPlay = false;
         GameOver = false;
-        LoadRandomCodleAnswer();
+        if (DidPlayerWin)
+        {
+            LoadRandomCodleAnswer();
+        }
         ComputerGuessedWordsList.Clear();
     }
 

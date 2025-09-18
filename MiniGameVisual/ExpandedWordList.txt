@@ -110,3 +110,9 @@ boost:A comprehensive collection of C++ libraries offering functionality like sm
 opsec:Short for "Operational Security". A strategy in cybersecurity focused on protecting sensitive information by identifying and minimizing risks.
 ipsec:Stands for Internet Protocol Security. A suite of protocols that encrypts network traffic and ensures authenticity.
 login:The process where a user identifies themselves and gains access to a system, usually by entering a username and password.
+embed:Insert code or binary data inside another format. For example, embed an image inside HTML or EMBED a resource in an executable.
+frame:A stack frame or UI container. For example, a frame holds local variables during a function call or a GUI panel in an app.
+trace:A record of execution steps or stack trace for debugging. For example, stack trace shows where an exception originated.
+tuple:An ordered, immutable collection of values. For example, (x, y, z) is a tuple used to return multiple values.
+graph:A data structure of nodes and edges or graph DBs. For example, model relationships with a graph.
+state:The stored status of an application or object. For example, UI state determines what is rendered.

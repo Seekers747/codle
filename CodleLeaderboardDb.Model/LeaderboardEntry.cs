@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CodleLeaderboardDb.Model;
+﻿namespace CodleLeaderboardDb.Model;
 
 public class LeaderboardEntry
 {
