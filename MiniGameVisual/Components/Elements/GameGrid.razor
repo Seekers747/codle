@@ -1,0 +1,13 @@
+﻿@* Components/GameGrid.razor *@
+
+<div class="GuessBox">
+  @for (int y = 0; y < 6; y++)
+  {
+    <div class="AttemptRow">
+      @for (int x = 0; x < 5; x++)
+      {
+        <span class="LetterCell @GetCellClass(y, x)">@Grid[y, x]</span>
+      }
+    </div>
+  }
+</div>

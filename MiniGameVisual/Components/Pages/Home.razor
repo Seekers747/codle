@@ -2,6 +2,7 @@
 @using CodleLeaderboardDb.Model
 @using Microsoft.EntityFrameworkCore
 @using MiniGameVisual.Services
+@using MiniGameVisual.Components.Elements
 @rendermode InteractiveServer
 @inject IGameSessionService GameSessionService
 
@@ -12,17 +13,7 @@
         <h1 class="CodleTitleStyling">Codle</h1>
         <h3 class="CodleSubtitleStyling">A software development related version of wordle</h3>
     </div>
-    <div class="GuessBox">
-        @for (int y = 0; y < 6; y++)
-        {
-            <div class="AttemptRow">
-                @for (int x = 0; x < 5; x++)
-                {
-                    <span class="LetterCell @gridStyles[y, x]">@grid[y, x]</span>
-                }
-            </div>
-        }
-    </div>
+    <GameGrid Grid="@grid" GridStyles="@gridStyles"/>
     <div class="TopPageTitle PositionMessage">
         <h3 class="CodleMessageNotice">@((MarkupString)codle.Message)</h3>
     </div>
@@ -35,49 +26,7 @@
     <div class="TopPageTitle PositionTimer">
         <h3 class="CodleSubtitleStyling">Elapsed time in seconds: @elapsedSeconds</h3>
     </div>
-    <div class="TopPageTitle PositionLeaderboard">
-        <div class="LeaderboardBox">
-            <h3 class="CodleSubtitleStyling">Leaderboard</h3>
-            <ul class="LeaderboardList">
-                <li class="LeaderboardHeader">
-                    <span class="LeaderboardName"><strong>Name</strong></span>
-                    <span class="LeaderboardScore"><strong>Score</strong></span>
-                    <span class="LeaderboardAttempts"><strong>Attempts</strong></span>
-                    <span class="LeaderboardDate"><strong>DateAchieved</strong></span>
-                </li>
-
-                @for (int i = 0; i < 10; i++)
-                {
-                    var entryClass = i switch
-                    {
-                        0 => "GoldEntry",
-                        1 => "SilverEntry",
-                        2 => "BronzeEntry",
-                        _ => "StandardEntry"
-                    };
-                    if (i < leaderboard.Count)
-                    {
-                        var entry = leaderboard[i];
-                        <li class="@entryClass">
-                            <span class="LeaderboardName">@entry.Username</span>
-                            <span class="LeaderboardScore">@FormatTime(entry.TimeTaken)</span>
-                            <span class="LeaderboardAttempts">@entry.Attempts</span>
-                            <span class="LeaderboardDate">@entry.DateAchieved.ToString("yyyy-MM-dd")</span>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="@entryClass">
-                            <span class="LeaderboardName">---</span>
-                            <span class="LeaderboardScore">---</span>
-                            <span class="LeaderboardAttempts">---</span>
-                            <span class="LeaderboardDate">---</span>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-    </div>
+    <Leaderboard LeaderboardList="@leaderboard"/>
     <button 
         class="RestartGameButton" 
         @onclick="RestartGame"

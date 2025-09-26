@@ -20,19 +20,6 @@ body {
     outline: none;
 }
 
-.GuessBox {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    outline: none;
-}
-
-.AttemptRow {
-    display: flex;
-    gap: 8px;
-}
-
 .VisibleKeyboard {
     display: flex;
     flex-direction: column;
@@ -46,28 +33,6 @@ body {
     display: flex;
     flex-direction: row;
     gap: 7px;
-}
-
-.LetterCell {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-weight: bold;
-    font-size: 24px;
-    transition: transform 0.2s ease;
-}
-
-.LetterCell.typed {
-    transform: scale(1.2);
-    border: solid black 3px;
-}
-
-.LetterCell.typed:active {
-    transform: scale(1);
 }
 
 input:focus {
@@ -324,90 +289,6 @@ input:focus {
 
 .allowed-words-box button:hover {
     background-color: #e0e0e0;
-}
-
-.LeaderboardBox {
-    background: #ecf0f1;
-    border: 2px solid #bdc3c7;
-    border-radius: 10px;
-    padding: 1rem;
-    max-width: 100%;
-    width: 100%;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-    overflow-x: auto;
-    cursor:default;
-}
-
-.LeaderboardBox h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.LeaderboardList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-}
-
-.LeaderboardList li {
-    display: contents;
-}
-
-.LeaderboardHeader {
-    background-color: #bdc3c7;
-    font-weight: bold;
-    padding: 0.5rem;
-    border-radius: 5px;
-    display: contents;
-}
-
-.LeaderboardList span {
-    padding: 0.5rem;
-    border-bottom: 1px solid #ccc;
-    font-size: 0.95rem;
-    text-align: center;
-}
-
-.LeaderboardList span.LeaderboardName {
-    font-weight: 600;
-    color: #34495e;
-}
-
-.LeaderboardScore, .LeaderboardAttempts, .LeaderboardDate {
-    color: #7f8c8d;
-}
-
-.LeaderboardList span:hover {
-    background-color: #dfe6e9;
-    transition: background-color 0.2s ease;
-}
-
-.GoldEntry {
-    background-color: #ffd700;
-    color: #000;
-    font-weight: bold;
-}
-
-.SilverEntry {
-    background-color: #c0c0c0;
-    color: #000;
-    font-weight: bold;
-}
-
-.BronzeEntry {
-    background-color: #cd7f32;
-    color: #000;
-    font-weight: bold;
-}
-
-.StandardEntry {
-    background-color: transparent;
 }
 
 .nameinput-popup {
