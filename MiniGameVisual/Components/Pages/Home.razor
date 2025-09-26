@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using CodleLeaderboardDb.Model
 @using Microsoft.EntityFrameworkCore
+@using MiniGameVisual.Services
 @rendermode InteractiveServer
+@inject IGameSessionService GameSessionService
 
 <PageTitle>Home</PageTitle>
 
@@ -76,7 +78,12 @@
             </ul>
         </div>
     </div>
-    <button class="RestartGameButton" @onclick="RestartGame">Restart game</button>
+    <button 
+        class="RestartGameButton" 
+        @onclick="RestartGame"
+        disabled="@IsRestartBlocked">
+        Restart game
+    </button>
     @if (showPopup)
     {
         <div class="popup-overlay">
@@ -103,10 +110,6 @@
                 <input class="nameinput-popup" id="playerName" @bind="playerName" maxlength="20" />
                 <button @onclick="SubmitPlayerName">Submit</button>
             </div>
-            @* @if (showNameError)
-            {
-                <p class="ErrorMessage">Invalid name. Please try again.</p>
-            } *@
         </div>
     }
     <section class="VisibleKeyboard" aria-label="On-screen keyboard">

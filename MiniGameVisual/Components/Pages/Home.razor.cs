@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
-using static ConsoleMovement.Codle;
+using static Codle.Codle;
 
 namespace MiniGameVisual.Components.Pages;
 
@@ -15,7 +15,7 @@ public partial class Home
     private readonly string[,] gridStyles = new string[7, 6];
     private int CurrentColumn;
     private int CurrentRow;
-    private readonly Codle codle = new();
+    private readonly Codle.Codle codle = new();
     public List<char> CheckedLetters { get; private set; } = [];
     private ElementReference CodleResetFix;
     private readonly string[] TopRowVisibleKeyboard = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
@@ -32,11 +32,25 @@ public partial class Home
     private CancellationTokenSource? timerCts;
     private bool ShowUsernameInputPopup = false;
     public bool DidPlayerWin = false;
+    private bool FinishedGameFair;
 
     protected override void OnInitialized()
     {
         codle.StartGame();
         InitializeGrid();
+    }
+
+    private bool _initializedRender;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initializedRender)
+        {
+            await GameSessionService.InitializeAsync();
+            _initializedRender = true;
+
+            StateHasChanged();
+        }
     }
 
     private void InitializeGrid()
@@ -89,10 +103,10 @@ public partial class Home
 
     private async Task RunComputerAttemptsAsync()
     {
+        codle.DidComputerPlay = true;
         await RestartGame();
         computerCancelSource = new CancellationTokenSource();
         var token = computerCancelSource.Token;
-        codle.DidComputerPlay = true;
 
         for (int i = 0; i < 6; i++)
         {
@@ -182,6 +196,9 @@ public partial class Home
         if (string.Equals(CurrentGuess, codle.CodleWord, StringComparison.OrdinalIgnoreCase)
             && !codle.DidComputerPlay)
         {
+            await GameSessionService.ResetRestartCountAsync();
+            UnfinishedRestartCount = await GameSessionService.GetUnfinishedRestartCountAsync();
+            FinishedGameFair = true;
             DidPlayerWin = true;
             ShowUsernameInputPopup = true;
             await SubmitPlayerName();
@@ -190,6 +207,14 @@ public partial class Home
         CurrentGuess = string.Empty;
         CurrentRow++;
         CurrentColumn = 0;
+
+        if (CurrentRow >= 6 && !codle.DidComputerPlay)
+        {
+            await GameSessionService.ResetRestartCountAsync();
+            UnfinishedRestartCount = await GameSessionService.GetUnfinishedRestartCountAsync();
+            FinishedGameFair = true;
+            StateHasChanged();
+        }
     }
 
     private void CheckCorrectLetters(string guess)
@@ -253,6 +278,16 @@ public partial class Home
 
     private async Task RestartGame()
     {
+        if (!codle.DidComputerPlay)
+        {
+            await CheckGameFair();
+            if (IsRestartBlocked)
+            {
+                await CodleResetFix.FocusAsync();
+                return;
+            }
+        }
+
         computerCancelSource?.Cancel();
         computerCancelSource = null;
 
@@ -362,7 +397,6 @@ public partial class Home
             await InvokeAsync(StateHasChanged);
     }
 
-
     private bool showNameError = false;
     private string? playerName;
     private async Task SubmitPlayerName()
@@ -377,5 +411,30 @@ public partial class Home
         {
             showNameError = true;
         }
+    }
+
+    public int UnfinishedRestartCount { get; set; }
+    private bool IsRestartBlocked => UnfinishedRestartCount >= 3;
+
+    public async Task CheckGameFair()
+    {
+        if (!FinishedGameFair)
+        {
+            await GameSessionService.IncrementRestartCountAsync();
+            UnfinishedRestartCount = await GameSessionService.GetUnfinishedRestartCountAsync();
+
+            Console.WriteLine($"Unfinished restart count: {UnfinishedRestartCount}");
+
+            // Example: take action if suspicious
+            if (UnfinishedRestartCount >= 3)
+            {
+                Console.WriteLine("Warning: player may be trying to cheese!");
+                // TODO: you could log to server or show a warning
+            }
+        }
+        FinishedGameFair = false;
+        Console.WriteLine($"the reset count: {UnfinishedRestartCount}");
+        Console.WriteLine($"restart should be blocked {IsRestartBlocked}");
+        StateHasChanged();
     }
 }

@@ -1,4 +1,5 @@
 using MiniGameVisual.Components;
+using MiniGameVisual.Services;
 
 namespace MiniGameVisual
 {
@@ -11,6 +12,9 @@ namespace MiniGameVisual
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            // Register your service
+            builder.Services.AddScoped<IGameSessionService, GameSessionService>();
 
             var app = builder.Build();
 
