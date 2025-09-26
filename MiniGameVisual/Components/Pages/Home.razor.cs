@@ -103,8 +103,8 @@ public partial class Home
 
     private async Task RunComputerAttemptsAsync()
     {
-        codle.DidComputerPlay = true;
         await RestartGame();
+        codle.DidComputerPlay = true;
         computerCancelSource = new CancellationTokenSource();
         var token = computerCancelSource.Token;
 
